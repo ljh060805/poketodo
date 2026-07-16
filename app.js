@@ -193,7 +193,7 @@ function renderTodos() {
         if (체크박스.checked) {
           let 진짜완료 = confirm('정말 할 일을 마치셨나요?');
           if (진짜완료) {
-            let 획득볼 = todo.difficulty === 'hard' ? 30 : (todo.difficulty === 'normal' ? 20 : 10);
+            let 획득볼 = todo.difficulty === 'hard' ? 3 : (todo.difficulty === 'normal' ? 2 : 1);
             myMonsterballs += 획득볼;
             
             // 데이터 베이스 업데이트
