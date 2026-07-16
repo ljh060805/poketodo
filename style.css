@@ -1,0 +1,570 @@
+/* ========================================= */
+/* 🌟 아이폰 감성 폰트 (Pretendard) 불러오기 🌟 */
+/* ========================================= */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+/* ========================================= */
+/* 1. 전체 기본 설정 및 배경 */
+/* ========================================= */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* 아이폰 느낌의 프리텐다드 폰트를 1순위로 적용! */
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  
+  background: linear-gradient(135deg, #ffffff 0%, #e2ebf0 100%);
+  min-height: 100vh;
+}
+
+#app {
+  width: 95%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 달력(날짜 선택기) 글씨체 변경 */
+#datePicker {
+  font-family: 'Pretendard', sans-serif;
+  letter-spacing: 1px; /* 글자 간격을 살짝 띄워주면 숫자가 훨씬 예뻐 보입니다 */
+}
+
+/* 양옆 화살표 버튼도 같이 맞추고 싶다면 아래 코드도 추가하세요! */
+#prevDateBtn, #nextDateBtn {
+  font-family: 'Pretendard', sans-serif;
+}
+
+/* ========================================= */
+/* 2. 글래스모피즘 (유리 효과) 공통 스타일 */
+/* ========================================= */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================= */
+/* 3. 상단 헤더 */
+/* ========================================= */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin: 10px;
+  color: gray;
+}
+
+/* ========================================= */
+/* 4. 메인 화면 레이아웃 (Grid) */
+/* ========================================= */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 10px;
+  color: #333;
+}
+
+.todo-panel, .battle-panel {
+  padding: 20px;
+  min-height: 450px;
+}
+
+.todoList-bg {
+  background-color: #e2e2e2;
+  min-height: 200px;
+  border-radius: 20px;
+  padding: 15px;
+}
+
+
+/* ========================================= */
+/* 5. 대각선 배틀 필드 & 포켓몬 배치 */
+/* ========================================= */
+.battle-field {
+  position: relative;
+  height: 300px;
+  background-color: rgba(161, 206, 146, 0.4);
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+img {
+  height: 100px;
+  width: 100px;
+}
+
+.wild-pokemon-area {
+  position: absolute;
+  top: 10%;
+  right: 10%;
+}
+
+.my-pokemon-area {
+  position: absolute;
+  bottom: 10%;
+  left: 10%;
+}
+
+/* 야생 포켓몬 체력바 */
+.hp-bar-bg {
+  width: 100%;
+  height: 12px;
+  background-color: #e5e7eb;
+  border-radius: 6px;
+  margin: 5px 0;
+  overflow: hidden;
+}
+
+.hp-bar-fill {
+  width: 100%;
+  height: 100%;
+  background-color: #ff4c4c;
+  transition: width 0.3s ease;
+}
+
+/* ========================================= */
+/* 6. 폼 및 버튼 공통 요소 */
+/* ========================================= */
+button, input, select {
+  border: 1px solid #ced1d7;
+  border-radius: 8px;
+  padding: 8px 12px;
+  outline: none;
+  background: white;
+  color: #333;
+  box-shadow: 2px 2px 2cqb rgba(0, 0, 0, 0.2);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f3f4f6;
+}
+
+/* ========================================= */
+/* 7. 투두 리스트 아이템 & 뱃지 */
+/* ========================================= */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#todoList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: rgba(255, 253, 253, 0.4);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.todo-left, .todo-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.todo-battle-btn, .todo-delete-btn {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 난이도 뱃지 디자인 */
+.todo-diff {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  display: inline-block;
+  text-align: center;
+  min-width: 20px;
+}
+
+.todo-diff.easy { background-color: #4ade80; }
+.todo-diff.normal { background-color: #fb923c; }
+.todo-diff.hard { 
+  background-color: #f87171; 
+  box-shadow: 0 2px 4px rgba(248, 113, 113, 0.4); 
+}
+
+/* ========================================= */
+/* 8. 타이머 & 전투 컨트롤 구역 */
+/* ========================================= */
+.timer-section {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.battle-btn {
+  background-color: #e17e7e;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 12px 30px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.time-bar-bg {
+  width: 85%;
+  height: 30px;
+  background-color: #e9ecef;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.time-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.time-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #a3cbed 0%, #b1e5e9 100%);
+  transition: width 1s linear;
+}
+
+/* ========================================= */
+/* 9. 애니메이션 및 탭 숨김 기능 */
+/* ========================================= */
+@keyframes hit-blink {
+  0% { filter: brightness(1); opacity: 1; }
+  50% { filter: sepia(1) hue-rotate(-50deg) saturate(5); opacity: 0.5; }
+  100% { filter: brightness(1); opacity: 1; }
+}
+
+.hit-effect {
+  animation: hit-blink 0.2s ease-in-out 3;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ========================================= */
+/* 🌟 전투 승리 & 보상 획득 애니메이션 🌟 */
+/* ========================================= */
+
+/* 1. 포켓몬 쓰러짐 (아래로 떨어지며 투명해짐) */
+@keyframes faint-drop {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(50px) scale(0.8); filter: grayscale(100%); }
+}
+
+.faint-effect {
+  animation: faint-drop 1s forwards ease-in; /* 1초 동안 실감 나게 쓰러짐 */
+}
+
+/* 2. 몬스터볼 획득 시 숫자 팡! 튀어 오르기 */
+@keyframes reward-bump {
+  0% { transform: scale(1); color: inherit; }
+  50% { 
+    transform: scale(2); 
+    color: #ffd700; /* 황금색으로 번쩍! */
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8); 
+  }
+  100% { transform: scale(1); color: inherit; }
+}
+
+.reward-bump {
+  display: inline-block; /* 글자 크기를 키우려면 필요함 */
+  animation: reward-bump 0.8s ease-out;
+}
+
+/* ========================================= */
+/* 10. 상점(뽑기) 탭 스타일 */
+/* ========================================= */
+
+.title {
+  /* 1. 화면 한가운데로 정렬하는 마법 */
+  display: block;
+  width: fit-content; /* 글자 길이만큼만 상자 크기를 맞춤 */
+  margin: 30px auto; /* 위아래 여백 30px, 양옆 여백은 자동으로 맞춰서 중앙 정렬 */
+  
+  /* 2. 예쁜 타원(알약) 모양을 만드는 마법 */
+  padding: 20px 40px; /* 위아래는 15px, 양옆은 40px로 길게 안쪽 여백 주기 */
+  border-radius: 20px; /* 값을 아주 크게 주면 양끝이 완벽한 반원이 됩니다 */
+  
+  /* 3. 디자인 디테일 */
+  text-align: center;
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.7); /* 흰색 배경을 살짝 더 진하게 */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자를 조금 더 부드럽고 자연스럽게 수정 */
+}
+
+.shop-grid {
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  flex-wrap: wrap; /* 화면이 좁아지면 밑으로 떨어지게 */
+  gap: 50px; /* 머신 사이 간격 */
+  padding: 20px;
+}
+
+/* 가챠 머신 뒷배경 (유리 카드) */
+.gacha-card {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px 20px;
+  width: 280px;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.gacha-card:hover {
+  transform: translateY(-10px); /* 마우스 올리면 카드가 살짝 위로 뜹니다 */
+}
+
+/* 일반 머신 테두리 & 그림자 (노란색) */
+.normal-machine {
+  border: 3px solid;
+  border-color: rgba(192, 192, 192, 0.4); 
+  box-shadow: 0 10px 30px rgba(165, 165, 165, 0.5);
+}
+
+/* 전설 머신 테두리 & 그림자 (빨간/보라색) */
+.legendary-machine {
+  border: 3px solid;
+  border-color: rgba(192, 192, 192, 0.4);
+  box-shadow: 0 10px 30px rgba(165, 165, 165, 0.5);
+}
+
+/* 🌟 머신 이미지 둥둥 떠다니는 애니메이션 */
+.gacha-img {
+  width: 220px; /* 준비하신 이미지 크기에 맞춰 조절하세요! */
+  height: auto;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2)); /* 이미지 밑에 그림자 */
+  animation: float-gacha 3s ease-in-out infinite;
+}
+
+/* 전설 머신은 일반 머신과 박자가 엇갈리게 움직이도록 지연 시간 추가 */
+.legendary-machine .gacha-img {
+  animation-delay: 1.5s; 
+}
+
+@keyframes float-gacha {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-15px); } /* 위로 15px 올라감 */
+  100% { transform: translateY(0); }
+}
+
+/* 가챠 버튼 공통 스타일 */
+.gacha-btn {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 30px;
+  border: none;
+  color: white;
+  width: 100%;
+  margin-top: 15px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+/* 일반 뽑기 버튼 (골드 그라데이션) */
+.normal-btn {
+  background: linear-gradient(135deg, #ffdd6d 0%, #e8d79a 100%);
+  box-shadow: 0 4px 15px rgba(155, 155, 155, 0.4);
+}
+.normal-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #ffdd6d 0%, #e8d79a 100%);
+  box-shadow: 0 4px 15px rgba(155, 155, 155, 0.4);
+  
+}
+
+/* 전설 뽑기 버튼 (마스터볼 느낌의 레드 그라데이션) */
+.legendary-btn {
+  background: linear-gradient(135deg, #ff9597 0%, #c8727d 100%);
+  box-shadow: 0 4px 15px rgba(116, 116, 116, 0.4);
+}
+.legendary-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #ff9597 0%, #c8727d 100%);
+  box-shadow: 0 4px 15px rgba(116, 116, 116, 0.4);
+}
+
+/* 상단 인벤토리(지갑) 꾸미기 */
+.inventory {
+  background: rgba(255, 255, 255, 0.7); /* 반투명 흰색 배경 */
+  backdrop-filter: blur(10px);
+  padding: 8px 18px; /* 통통하게 */
+  border-radius: 20px; /* 알약 모양 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 */
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+/* 숫자(0) 부분만 포인트 컬러 주기 */
+.inventory strong {
+  color: #ff4c4c; /* 눈에 띄는 빨간색 */
+  font-size: 1.2em; /* 숫자만 살짝 크게 */
+  margin: 0 4px;
+}
+
+/* 기존 .app-header에 배경과 그림자 추가 */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  margin: 10px;
+  
+  /* 추가할 부분 */
+  background: rgba(255, 255, 255, 0.4); /* 연한 유리 배경 */
+  border-radius: 15px; /* 둥글게 */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* 아주 옅은 그림자 */
+}
+
+
+/* ========================================= */
+/* 11. 가챠 결과 팝업창 (모달) 스타일 */
+/* ========================================= */
+
+/* 화면 전체를 덮는 어두운 배경 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 제일 위로 오게 함 */
+}
+
+/* hidden 클래스가 있으면 숨기기 */
+.modal-overlay.hidden {
+  display: none;
+}
+
+/* 팝업창 본체 */
+.modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 띠용! 하고 튀어나오는 마법 */
+}
+
+.modal-pokemon-img {
+  width: 180px;
+  height: auto;
+  margin: 20px 0;
+  filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
+}
+
+.modal-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.modal-btn:hover {
+  background-color: #45a049;
+}
+
+@keyframes popUp {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+/* ========================================= */
+/* 12. 도감 탭 스타일 */
+/* ========================================= */
+.pokedex-grid {
+  display: flex;
+  flex-wrap: wrap; /* 카드가 많아지면 밑으로 떨어지게 */
+  gap: 20px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.pokedex-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  width: 120px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+  position: relative; /* 개수 뱃지를 달기 위한 기준점 */
+  border: 2px solid transparent;
+}
+
+.pokedex-card:hover {
+  transform: translateY(-5px);
+  border-color: #f6d365; /* 마우스 올리면 노란 테두리 */
+}
+
+.pokedex-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain; /* 이미지가 찌그러지지 않게 */
+  margin-bottom: 10px;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
+}
+
+.pokedex-card h4 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* 획득 개수 뱃지 (오른쪽 위) */
+.pokedex-card .count {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ff4c4c;
+  color: white;
+  border-radius: 50px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(255, 76, 76, 0.4);
+}

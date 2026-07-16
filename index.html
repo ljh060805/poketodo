@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PokeTodo Battle</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="app">
+    <header class="app-header">
+      <nav class="tab-menu">
+        <button class="tab-btn active" data-tab="main-tab">메인 화면</button>
+        <button class="tab-btn" data-tab="shop-tab">포켓몬 뽑기</button>
+        <button class="tab-btn" data-tab="pokedex-tab">나의 도감</button>
+      </nav>
+      <div class="inventory">
+        <span>보유 몬스터볼: <strong id="monsterballCount">50</strong>개</span>
+      </div>
+    </header>
+
+    <main class="tab-container">
+      
+      <section id="main-tab" class="tab-content active">
+        <div class="main-grid">
+          
+          <div class="todo-panel glass-panel">
+            <div class="date-header" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px;">
+              <button id="prevDateBtn" style="border:none; background:none; font-size:12px; cursor:pointer;">◀</button>
+              <input type="date" id="datePicker" style="font-size: 20px; border: none; font-weight: bold; background: transparent; cursor: pointer; text-align: center; color: #333; outline: none;" >
+              <button id="nextDateBtn" style="border:none; background:none; font-size:12px; cursor:pointer;">▶</button>
+            </div>
+            <div class="todo-input-group">
+              <h3>오늘의 할 일 입력</h3>
+              <select id="difficultySelect">
+                <option value="easy">하</option>
+                <option value="normal">중</option>
+                <option value="hard">상</option>
+              </select>
+              <input type="text" id="todoInput" placeholder="할 일 입력 ...">
+              <button id="addTodoBtn">등록</button>
+            </div>
+            
+            <div class="todo-list-group">
+              <h3>오늘의 할 일</h3>
+              <div class="todoList-bg">
+                <ul id="todoList"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="battle-panel glass-panel">
+            <div class="battle-field">
+              
+              <div class="wild-pokemon-area">
+                <div class="status-box">
+                  <span class="pokemonName" id="wildPokemonName">야생의 구구</span>
+                  <div class="hp-bar-bg">
+                    <div class="hp-bar-fill" id="wildHpFill"></div> 
+                  </div>
+                  <div class="hp-text" id="wildHpText">60 / 60</div>
+                </div>
+                <img id="wildPokemon" src="./img/gugu.png" alt="야생 포켓몬">
+              </div>
+
+              <div class="my-pokemon-area">
+                <img id="playerPokemon" src="./img/pikachu.png" alt="내 포켓몬">
+                <div class="status-box">
+                  <span id="myPokemonName" class="pokemonName">피카츄</span>
+                  <span class="pokemonHp">100 / 100</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="timer-section">
+              <button type="button" id="battleBtn" class="battle-btn">▶ 전투 시작</button>
+              
+              <div class="time-bar-bg">
+                <!-- 파란색 바는 넓이만 줄어들게 놔둡니다 (글자 삭제) -->
+                <div class="time-bar-fill" id="timeBarFill"></div>
+                <!-- 글자만 담는 전용 상자를 새로 만들고 둥둥 띄웁니다 -->
+                <div class="time-text" id="timeText">60:00</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+<!-- 포켓몬 뽑기 탭 -->
+      <section id="shop-tab" class="tab-content">
+        <div class="shop-title">
+          <h3 class="title">포켓몬 센터 뽑기 머신</h3>
+        </div>
+        
+        <div class="shop-grid">
+          
+          <!-- 일반 가챠 머신 -->
+          <div class="gacha-card normal-machine">
+            <img src="./img/normal.png" alt="일반 가챠" class="gacha-img">
+            <h3>일반 뽑기</h3>
+            <p>🪙 몬스터볼 1개 소모</p>
+            <button id="normalDraw" class="gacha-btn normal-btn">일반 뽑기</button>
+          </div>
+
+          <!-- 전설 가챠 머신 -->
+          <div class="gacha-card legendary-machine">
+            <img src="./img/legendary.png" alt="전설 가챠" class="gacha-img">
+            <h3>전설 뽑기</h3>
+            <p>🪙 몬스터볼 10개 소모</p>
+            <button id="legendaryDraw" class="gacha-btn legendary-btn">전설 뽑기</button>
+          </div>
+
+          <!-- 🌟 가챠 결과 팝업창 (평소엔 숨김) 🌟 -->
+          <div id="gachaModal" class="modal-overlay hidden">
+            <div class="modal-content">
+              <h2 id="modalTitle">🎉 포켓몬 획득!</h2>
+              <!-- 뽑은 포켓몬 사진이 들어갈 자리 -->
+              <img id="modalImg" src="" alt="포켓몬" class="modal-pokemon-img">
+              <!-- 뽑은 포켓몬 이름이 들어갈 자리 -->
+              <h3 id="modalName">피카츄</h3>
+              <button id="modalCloseBtn" class="modal-btn">도감에 넣기</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="pokedex-tab" class="tab-content">
+        <h3 class="title">나의 포켓몬 도감</h3>
+        
+        <!-- 뽑은 포켓몬들이 추가될 공간 -->
+        <div id="pokedexGrid" class="pokedex-grid">
+          <!-- 자바스크립트가 여기에 카드를 만들어 줄 겁니다! -->
+        </div>
+        
+        <!-- 🌟 도감 상세 정보 팝업창 -->
+        <div id="dexModal" class="modal-overlay hidden">
+          <div class="modal-content">
+            <h2 id="dexName">포켓몬 이름</h2>
+            <img id="dexImg" src="" class="modal-pokemon-img">
+            <p id="dexDesc" style="margin: 20px 0; line-height: 1.6; color: #555; word-break: keep-all;"></p>
+            
+            <!-- 🌟 이 부분 추가! 파트너 설정 버튼과 닫기 버튼을 나란히 배치 -->
+            <div style="display: flex; gap: 10px; justify-content: center;">
+              <button id="setPartnerBtn" class="modal-btn" style="background-color: #f6d365; color: #333;">⭐ 메인 파트너로 설정</button>
+              <button id="dexCloseBtn" class="modal-btn" style="background-color: #6c757d;">닫기</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+            <!-- 🌟 할 일 수정 팝업창 -->
+      <div id="editModal" class="modal-overlay hidden">
+        <div class="modal-content">
+          <h2 style="margin-bottom: 15px;">퀘스트 수정</h2>
+          
+          <!-- 글자 수정 칸 -->
+          <input type="text" id="editTodoInput" style="width: 80%; padding: 10px; margin-bottom: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; outline: none;">
+          <br>
+          
+          <!-- 난이도 수정 칸 -->
+          <select id="editDifficultySelect" style="padding: 10px; margin-bottom: 20px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; outline: none;">
+            <option value="easy">난이도: 하 (1시간)</option>
+            <option value="normal">난이도: 중 (2시간)</option>
+            <option value="hard">난이도: 상 (3시간)</option>
+          </select>
+
+          <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="editSaveBtn" class="modal-btn" style="background-color: #4CAF50;">저장</button>
+            <button id="editCancelBtn" class="modal-btn" style="background-color: #6c757d;">취소</button>
+          </div>
+        </div>
+      </div>
+  
+
+  <script src="app.js"></script>
+</body>
+</html>
