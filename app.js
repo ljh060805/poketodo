@@ -401,7 +401,7 @@ difficultySelect.addEventListener('change', function() {
   const selectedValue = difficultySelect.value;
 
   if (selectedValue === 'easy') {
-    total = 5;  
+    total = 3600;  
     maxHP = 60;
   } else if (selectedValue === 'normal') {
     total = 7200;  
