@@ -577,8 +577,18 @@ ul {
   header, .header-area {
     display: flex !important;
     flex-direction: column !important;
+    width: 100% !important; /* 🌟 가로 크기를 아래 화면과 똑같이 100%로 꽉 채웁니다 */
+    box-sizing: border-box !important; /* 🌟 테두리가 삐져나가지 않게 막아줍니다 */
     gap: 10px !important;
     height: auto !important;
+  }
+
+  /* 탭 버튼들이 중앙에 예쁘게 모이도록 정렬 */
+  header div {
+    display: flex !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
   }
 
   /* 2. 메인 화면(할 일과 배틀 구역)을 위아래로 배치 (핵심!) */
