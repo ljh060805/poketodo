@@ -2,11 +2,21 @@
 // 🌟 1. 데이터 불러오기 (Local Storage)
 // ==========================================
 let myMonsterballs = parseInt(localStorage.getItem('myMonsterballs')) || 0;
-let myPokedex = JSON.parse(localStorage.getItem('myPokedex')) || [];
 let myTodos = JSON.parse(localStorage.getItem('myTodos')) || []; 
 
-// 🌟 내 메인 파트너 포켓몬 정보 불러오기 (없으면 기본 피카츄!)
-let myPartner = JSON.parse(localStorage.getItem('myPartner')) || { name: '피카츄', img: './img/pikachu.png' };
+// 🌟 [추가] 피카츄 기본 이미지 (공식 API의 고화질 이미지 인터넷 링크)
+const pikachuImgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png";
+
+// 🌟 [수정] 도감 불러오기 & 신규 유저에게 피카츄 선물!
+let myPokedex = JSON.parse(localStorage.getItem('myPokedex'));
+if (!myPokedex || myPokedex.length === 0) {
+  // 도감이 아예 비어있다면(처음 접속했다면) 피카츄 1마리를 넣어줍니다.
+  myPokedex = [{ id: 25, name: '피카츄', img: pikachuImgUrl, count: 1 }];
+  localStorage.setItem('myPokedex', JSON.stringify(myPokedex));
+}
+
+// 🌟 [수정] 내 메인 파트너 정보 불러오기 (없으면 인터넷에서 피카츄 사진 가져오기!)
+let myPartner = JSON.parse(localStorage.getItem('myPartner')) || { name: '피카츄', img: pikachuImgUrl };
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('monsterballCount').innerText = myMonsterballs;
