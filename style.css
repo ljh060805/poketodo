@@ -568,3 +568,33 @@ ul {
   font-weight: bold;
   box-shadow: 0 2px 5px rgba(255, 76, 76, 0.4);
 }
+
+/* ==========================================
+   📱 모바일(스마트폰) 전용 화면 설정
+========================================== */
+@media screen and (max-width: 768px) {
+  /* 게임기 바탕 화면을 세로로 길게 */
+  .app-container {
+    flex-direction: column; 
+    height: auto;
+    padding: 10px;
+  }
+  
+  /* 왼쪽(내 포켓몬), 오른쪽(야생/할일) 구역을 화면 꽉 차게 */
+  .left-panel, .right-panel {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 2px solid #ccc;
+  }
+
+  /* 도감 카드를 폰에서는 3칸이나 2칸으로 줄이기 */
+  .pokedex-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+  }
+
+  /* 투두 리스트나 모달창 글씨 크기 살짝 줄이기 */
+  .todo-text { font-size: 14px; }
+  .modal-content { width: 90%; }
+}
