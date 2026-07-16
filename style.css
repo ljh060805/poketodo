@@ -619,4 +619,29 @@ ul {
     border-radius: 15px !important; /* 모서리 둥글게 통일 */
   }
 
-  /* (이 아래에 있던 4. 할 일 카드(li) 코드와 5. 도감 카드 코드는 그대로 두세요!) */
+/* 4. 할 일 카드(li) 안의 버튼들이 찌그러지지 않게 위아래로 분리 */
+  #todoList li {
+    display: flex !important;
+    flex-direction: column !important; /* 위(글자) 아래(버튼)로 나눔 */
+    align-items: flex-start !important;
+    padding: 15px !important;
+    height: auto !important;
+  }
+  
+  .todo-left {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+
+  .todo-right {
+    width: 100% !important;
+    justify-content: flex-end !important; /* 버튼들을 오른쪽으로 몰기 */
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  
+  /* 5. 도감 카드 크기 조절 */
+  .pokedex-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+  }
+}
