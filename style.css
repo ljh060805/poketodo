@@ -592,8 +592,8 @@ ul {
   }
 
   /* 2. 메인 화면(할 일과 배틀 구역)을 위아래로 배치 (핵심!) */
-  #main-tab, 
-  #main-tab > div {
+  #main-tab.active, 
+  #main-tab.active > div {
     display: flex !important;
     flex-direction: column !important;
   }
