@@ -1,4 +1,33 @@
 // ==========================================
+// 🔥 Firebase 서버 연결 (항상 1순위로 실행!)
+// ==========================================
+// 1. 구글 서버에서 필요한 도구들을 인터넷으로 직접 가져옵니다.
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// 2. 유저님의 고유한 금고 열쇠 정보입니다.
+const firebaseConfig = {
+  apiKey: "AIzaSyDKR64gn7RxfoiCltiEPVFR-7oofasNigg",
+  authDomain: "poketode.firebaseapp.com",
+  projectId: "poketode",
+  storageBucket: "poketode.firebasestorage.app",
+  messagingSenderId: "977484593642",
+  appId: "1:977484593642:web:27d710efb40cc0dace1a93"
+};
+
+// 3. 열쇠를 꽂아 서버를 켜고, 로그인(auth)과 공용 금고(db) 기능을 활성화합니다!
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app); // 🌟 로그인 담당 경비원
+export const db = getFirestore(app); // 🌟 데이터 저장소 (공용 금고)
+
+// ==========================================
+// 🌟 1. 데이터 불러오기 (Local Storage) - (원래 있던 코드 시작)
+// ==========================================
+// let myMonsterballs = parseInt(localStorage.getItem('myMonsterballs')) || 0;
+// ... (이하 기존 코드 동일)
+
+// ==========================================
 // 🌟 1. 데이터 불러오기 (Local Storage)
 // ==========================================
 let myMonsterballs = parseInt(localStorage.getItem('myMonsterballs')) || 0;
