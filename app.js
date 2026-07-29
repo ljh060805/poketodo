@@ -773,19 +773,55 @@ if (loginBtn) {
 }
 
 // 유저의 상태(로그인 됨/안 됨)를 실시간으로 감시하는 요정
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
     // 🟢 유저가 접속했을 때
+    currentUserUid = user.uid; // 유저의 고유 신분증 번호 발급!
     loginBtn.innerText = '로그아웃';
-    loginBtn.style.backgroundColor = '#ddd'; // 버튼 색을 회색으로
+    loginBtn.style.backgroundColor = '#ddd'; 
     userNameDisplay.innerText = `👋 ${user.displayName} 트레이너님!`;
     
-    // (나중에 3단계에서 여기에 "서버에서 내 데이터 가져오기" 코드를 넣을 겁니다!)
+    // ☁️ 1. 구글 서버(users 폴더)에서 내 신분증 파일 꺼내오기
+    const userDoc = doc(db, "users", currentUserUid);
+    const docSnap = await getDoc(userDoc);
+
+    if (docSnap.exists()) {
+      // 📂 예전에 플레이하던 데이터가 있다면 내 변수들에 채워넣기
+      const data = docSnap.data();
+      myMonsterballs = data.monsterballs || 0;
+      myTodos = data.todos || [];
+      myPokedex = data.pokedex || [];
+      myPartner = data.partner || { name: '피카츄', img: pikachuImgUrl };
+    } else {
+      // 🐣 처음 로그인한 신규 트레이너라면 기본 세팅 후 서버에 첫 저장!
+      myPokedex = [{ id: 25, name: '피카츄', img: pikachuImgUrl, count: 1 }];
+      saveData(); 
+    }
+
+    // 🎨 2. 서버에서 가져온 데이터로 화면 예쁘게 업데이트하기
+    document.getElementById('monsterballCount').innerText = myMonsterballs;
+    const myPokemonImg = document.querySelector('.my-pokemon-area img');
+    const myPokemonName = document.getElementById('myPokemonName');
+    if (myPokemonImg) myPokemonImg.src = myPartner.img;
+    if (myPokemonName) myPokemonName.innerText = myPartner.name;
+    
+    renderTodos();     // 할일 화면 다시 그리기
+    updatePokedexUI(); // 도감 화면 다시 그리기
+
   } else {
     // 🔴 접속이 끊겼거나 로그아웃 했을 때
+    currentUserUid = null;
     loginBtn.innerText = '🌐 구글로 로그인';
-    loginBtn.style.backgroundColor = '#fbbc05'; // 원래 노란색으로
+    loginBtn.style.backgroundColor = '#fbbc05'; 
     userNameDisplay.innerText = '로그인을 해주세요!';
+    
+    // 남이 내 화면 못 보게 데이터 싹 비우기
+    myMonsterballs = 0;
+    myTodos = [];
+    myPokedex = [];
+    myPartner = { name: '피카츄', img: pikachuImgUrl };
+    document.getElementById('monsterballCount').innerText = 0;
+    renderTodos();
+    updatePokedexUI();
   }
 });
-}
