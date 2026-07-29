@@ -172,7 +172,7 @@ ul {
   gap: 8px;
 }
 
-.todo-battle-btn, .todo-delete-btn {
+.todo-battle-btn, .todo-delete-btn, .todo-edit-btn {
   padding: 4px 8px;
   font-size: 12px;
   border-radius: 4px;
