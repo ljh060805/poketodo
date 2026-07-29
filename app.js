@@ -4,7 +4,9 @@
 // 1. 구글 서버에서 필요한 도구들을 인터넷으로 직접 가져옵니다.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// 🌟 [수정된 부분] 원래 getAuth 하나만 있던 자리에, 로그인에 필요한 도구들을 몽땅 가져옵니다!
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // 2. 유저님의 고유한 금고 열쇠 정보입니다.
 const firebaseConfig = {
@@ -20,12 +22,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app); // 🌟 로그인 담당 경비원
 export const db = getFirestore(app); // 🌟 데이터 저장소 (공용 금고)
-
-// ==========================================
-// 🌟 1. 데이터 불러오기 (Local Storage) - (원래 있던 코드 시작)
-// ==========================================
-// let myMonsterballs = parseInt(localStorage.getItem('myMonsterballs')) || 0;
-// ... (이하 기존 코드 동일)
 
 // ==========================================
 // 🌟 1. 데이터 불러오기 (Local Storage)
@@ -752,4 +748,50 @@ if (editSaveBtn) {
       editModal.classList.add('hidden'); 
     }
   });
+
+  // ==========================================
+// 🌟 9. 구글 트레이너 로그인 시스템
+// ==========================================
+const provider = new GoogleAuthProvider();
+const loginBtn = document.getElementById('loginBtn');
+const userNameDisplay = document.getElementById('userNameDisplay');
+
+// 로그인/로그아웃 버튼 클릭 이벤트
+if (loginBtn) {
+  loginBtn.addEventListener('click', () => {
+    if (loginBtn.innerText === '로그아웃') {
+      // 이미 로그인 된 상태라면 로그아웃 실행!
+      signOut(auth).then(() => {
+        alert("성공적으로 로그아웃 되었습니다.");
+      });
+    } else {
+      // 로그인 안 된 상태라면 구글 로그인 창 띄우기!
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          console.log("로그인 성공!", user.displayName);
+        }).catch((error) => {
+          console.error("로그인 에러:", error);
+          alert("로그인 중 문제가 발생했습니다.");
+        });
+    }
+  });
+}
+
+// 유저의 상태(로그인 됨/안 됨)를 실시간으로 감시하는 요정
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // 🟢 유저가 접속했을 때
+    loginBtn.innerText = '로그아웃';
+    loginBtn.style.backgroundColor = '#ddd'; // 버튼 색을 회색으로
+    userNameDisplay.innerText = `👋 ${user.displayName} 트레이너님!`;
+    
+    // (나중에 3단계에서 여기에 "서버에서 내 데이터 가져오기" 코드를 넣을 겁니다!)
+  } else {
+    // 🔴 접속이 끊겼거나 로그아웃 했을 때
+    loginBtn.innerText = '🌐 구글로 로그인';
+    loginBtn.style.backgroundColor = '#fbbc05'; // 원래 노란색으로
+    userNameDisplay.innerText = '로그인을 해주세요!';
+  }
+});
 }
