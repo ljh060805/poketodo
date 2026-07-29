@@ -223,12 +223,17 @@ function renderTodos() {
       renderTodos(); // 화면에서 사라지게 새로고침
     });
 
-    // [기능 C] 전투 기능 (기존과 동일)
+// [기능 C] 전투 기능 (기존과 동일)
     전투버튼.addEventListener('click', function() {
       document.getElementById('wildPokemonName').innerText = `야생의 ${todo.pokeName}`;
       document.getElementById('wildPokemon').src = todo.pokeImg;
       
-      if (current !== null) { clearInterval(current); current = null; startBtn.innerText = '▶ 전투 시작'; }
+      // 🌟 [추가] 퀘스트를 선택했으니 메인 전투 버튼의 잠금을 풀어줍니다!
+      startBtn.disabled = false;
+      startBtn.style.opacity = '1';
+      startBtn.innerText = '▶ 전투 시작';
+      
+      if (current !== null) { clearInterval(current); current = null; }
       현재진행중인할일버튼 = 전투버튼;
       
       total = Number(전투버튼.getAttribute('data-time'));
@@ -289,13 +294,22 @@ renderTodos();
 
 // 초기 화면 세팅: 아무 할 일도 선택하지 않았을 때의 야생 포켓몬 자리
 document.getElementById('wildPokemonName').innerText = "타겟 탐색 대기 중...";
-// 기본 사진을 물음표나 몬스터볼 실루엣으로 변경해두면 좋습니다! (예: './img/unknown.png' 등)
 document.getElementById('wildPokemon').src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
 
+// 🌟 [수정] 앱이 켜졌을 땐 퀘스트가 없으니 전투 버튼을 눌러도 작동 안 하게 잠가둡니다!
+startBtn.disabled = true;
+startBtn.style.opacity = '0.5';
+startBtn.innerText = '타겟을 선택해주세요';
+
+
 // ==========================================
-// 4. 타이머 및 배틀 진행 로직
+// 4. 🌟 [업그레이드된] 타이머 및 배틀 진행 로직
 // ==========================================
+let endTime = 0; // 실제 시계 기준으로 종료 시간을 기록할 변수
+
 startBtn.addEventListener('click', function() {
+  if (startBtn.disabled) return; // 버튼이 잠겨있으면 클릭 무시!
+
   if (current !== null) {
     clearInterval(current);
     current = null;
@@ -304,9 +318,14 @@ startBtn.addEventListener('click', function() {
   else {
     startBtn.innerText = '⏸ 일시정지';
     
+    // 🌟 탭을 벗어나도 시간이 가도록 '현실 시간 기준 목표 종료 시간'을 기록합니다!
+    endTime = Date.now() + (remained * 1000);
+    
     current = setInterval(function() {
-      remained = remained - 1; 
-      
+      // 🌟 현실 시간을 기준으로 남은 시간을 매초 다시 계산합니다 (다른 탭에 가도 작동!)
+      remained = Math.round((endTime - Date.now()) / 1000); 
+      if (remained < 0) remained = 0; // 0초 밑으로 내려가지 않게 방어
+
       // 진행 중인 할 일 버튼에 남은 시간 저장
       if (현재진행중인할일버튼 !== null) {
         현재진행중인할일버튼.setAttribute('data-time', remained);
@@ -323,66 +342,63 @@ startBtn.addEventListener('click', function() {
       let percent = (remained / total) * 100;
       timeBar.style.width = percent + '%'; 
       
-      // 1분마다 공격하기
-      if (remained > 0 && remained % 60 === 0) {
-        currentHP = currentHP - 1;
-        
-        // 진행 중인 할 일 버튼에 남은 체력 저장
-        if (현재진행중인할일버튼 !== null) {
-          현재진행중인할일버튼.setAttribute('data-hp', currentHP);
-        }
+      // 🌟 다른 탭에 오래 다녀와도 깎인 HP를 한 번에 정확히 계산합니다
+      let 지난시간 = total - remained; 
+      currentHP = maxHP - Math.floor(지난시간 / 60);
+      if (currentHP < 0) currentHP = 0;
 
-        wildHPText.innerText = currentHP + ' / ' + maxHP;
-        
-        let wildHpPercent = (currentHP / maxHP) * 100;
-        wildHpFill.style.width = wildHpPercent + '%';
-        
-        // 타격 애니메이션
+      if (현재진행중인할일버튼 !== null) {
+        현재진행중인할일버튼.setAttribute('data-hp', currentHP);
+      }
+
+      wildHPText.innerText = currentHP + ' / ' + maxHP;
+      let wildHpPercent = (currentHP / maxHP) * 100;
+      wildHpFill.style.width = wildHpPercent + '%';
+      
+      // 타격 애니메이션 (매 분 정각마다 한 번씩만)
+      if (remained > 0 && remained % 60 === 0) {
         const wildPokemon = document.getElementById('wildPokemon');
         wildPokemon.classList.add('hit-effect');
-        setTimeout(function() {
-          wildPokemon.classList.remove('hit-effect');
-        }, 600);
-
-        console.log("효과가 굉장했다! (적 HP 1 감소)");
+        setTimeout(() => wildPokemon.classList.remove('hit-effect'), 600);
       }
       
-      // 종료 조건
-// --- 종료 조건 (전투 승리!) ---
+      // --- 종료 조건 (전투 승리!) ---
       if (remained <= 0) {
         clearInterval(current); 
         current = null;
-        startBtn.innerText = '▶ 전투 시작';
         
-        // 1. 포켓몬 쓰러지는 이펙트 실행!
+        // 🌟 전투가 끝났으니 다른 타겟을 고를 때까지 다시 버튼 잠금!
+        startBtn.disabled = true;
+        startBtn.style.opacity = '0.5';
+        startBtn.innerText = '타겟을 선택해주세요';
+        
         const wildPokemon = document.getElementById('wildPokemon');
         wildPokemon.classList.add('faint-effect');
 
-        // 2. 난이도별 보상(몬스터볼) 계산하기
         let 퀘스트난이도 = 현재진행중인할일버튼 ? 현재진행중인할일버튼.getAttribute('data-diff') : 'easy';
-        let 획득볼 = 1; // 기본 하(easy)는 1개
-        if (퀘스트난이도 === 'normal') 획득볼 = 2; // 중은 2개
-        else if (퀘스트난이도 === 'hard') 획득볼 = 3; // 상은 3개
+        let 획득볼 = 1; 
+        if (퀘스트난이도 === 'normal') 획득볼 = 2; 
+        else if (퀘스트난이도 === 'hard') 획득볼 = 3; 
 
-        // 3. 1초 뒤(포켓몬이 다 쓰러진 후) 보상 지급 및 알림 띄우기
         setTimeout(function() {
-          // 내 금고에 볼 추가
           myMonsterballs = myMonsterballs + 획득볼; 
           
-          // 화면 상단 숫자 업데이트 & 황금빛 팡! 이펙트
           const ballCountUI = document.getElementById('monsterballCount');
           ballCountUI.innerText = myMonsterballs;
           ballCountUI.classList.add('reward-bump');
 
           alert(`🎉 전투 승리! 집중을 완료하여 전리품으로 몬스터볼 ${획득볼}개를 획득했습니다!`);
 
-          // 다음 전투를 위해 이펙트 떼어내고 원상복구
+          // 다음 전투를 위해 화면 리셋
           setTimeout(() => {
             wildPokemon.classList.remove('faint-effect');
             ballCountUI.classList.remove('reward-bump');
+            document.getElementById('wildPokemonName').innerText = "타겟 탐색 대기 중...";
+            document.getElementById('wildPokemon').src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+            현재진행중인할일버튼 = null; // 완료된 퀘스트 지우기
           }, 1000);
 
-        }, 1000); // 1초 대기 (쓰러지는 애니메이션 감상 시간) 
+        }, 1000); 
       }
     }, 1000); 
   }
