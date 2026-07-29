@@ -184,7 +184,7 @@ function renderTodos() {
         <button type="button" class="todo-battle-btn" 
           data-time="${todo.time}" data-hp="${todo.hp}" data-diff="${todo.difficulty}"
           data-pokename="${todo.pokeName}" data-pokeimg="${todo.pokeImg}"
-          ${todo.isCompleted ? 'disabled style="opacity: 0.5;"' : ''}>⚔️ 전투</button>
+          ${todo.isCompleted ? 'disabled style="opacity: 0.5;"' : ''}>전투</button>
         <button type="button" class="todo-delete-btn">❌</button>
       </div>
     `;
