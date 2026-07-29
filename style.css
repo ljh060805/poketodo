@@ -179,11 +179,6 @@ ul {
   cursor: pointer;
 }
 
-.todo-edit-btn {
-  font-size: 8px;
-  padding: 2px 2px;
-}
-
 /* 난이도 뱃지 디자인 */
 .todo-diff {
   padding: 4px 10px;
