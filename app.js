@@ -1,14 +1,11 @@
 // ==========================================
 // 🔥 Firebase 서버 연결 (항상 1순위로 실행!)
 // ==========================================
-// 1. 구글 서버에서 필요한 도구들을 인터넷으로 직접 가져옵니다.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// 🌟 [수정된 부분] 원래 getAuth 하나만 있던 자리에, 로그인에 필요한 도구들을 몽땅 가져옵니다!
+// 🌟 [수정] doc, setDoc, getDoc 이라는 '금고 문서 관리 요정' 3명을 새로 데려옵니다!
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// 2. 유저님의 고유한 금고 열쇠 정보입니다.
 const firebaseConfig = {
   apiKey: "AIzaSyDKR64gn7RxfoiCltiEPVFR-7oofasNigg",
   authDomain: "poketode.firebaseapp.com",
@@ -18,49 +15,47 @@ const firebaseConfig = {
   appId: "1:977484593642:web:27d710efb40cc0dace1a93"
 };
 
-// 3. 열쇠를 꽂아 서버를 켜고, 로그인(auth)과 공용 금고(db) 기능을 활성화합니다!
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app); // 🌟 로그인 담당 경비원
-export const db = getFirestore(app); // 🌟 데이터 저장소 (공용 금고)
+export const auth = getAuth(app); 
+export const db = getFirestore(app);
 
 // ==========================================
-// 🌟 1. 데이터 불러오기 (Local Storage)
+// 🌟 1. 데이터 불러오기 (클라우드 버전으로 업그레이드!)
 // ==========================================
-let myMonsterballs = parseInt(localStorage.getItem('myMonsterballs')) || 0;
-let myTodos = JSON.parse(localStorage.getItem('myTodos')) || []; 
+let currentUserUid = null; // 로그인한 사람의 신분증 번호를 기억할 변수
 
-// 🌟 [추가] 피카츄 기본 이미지 (공식 API의 고화질 이미지 인터넷 링크)
 const pikachuImgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png";
 
-// 🌟 [수정] 도감 불러오기 & 신규 유저에게 피카츄 선물!
-let myPokedex = JSON.parse(localStorage.getItem('myPokedex'));
-if (!myPokedex || myPokedex.length === 0) {
-  // 도감이 아예 비어있다면(처음 접속했다면) 피카츄 1마리를 넣어줍니다.
-  myPokedex = [{ id: 25, name: '피카츄', img: pikachuImgUrl, count: 1 }];
-  localStorage.setItem('myPokedex', JSON.stringify(myPokedex));
-}
+// 로컬 스토리지 삭제! 일단 전부 빈껍데기로 시작합니다. (로그인하면 서버에서 채워줌)
+let myMonsterballs = 0;
+let myTodos = [];
+let myPokedex = [];
+let myPartner = { name: '피카츄', img: pikachuImgUrl };
 
-// 🌟 [수정] 내 메인 파트너 정보 불러오기 (없으면 인터넷에서 피카츄 사진 가져오기!)
-let myPartner = JSON.parse(localStorage.getItem('myPartner')) || { name: '피카츄', img: pikachuImgUrl };
+// 🌟 [새로워진 저장 요정] 이제 내 폰이 아니라 구글 서버(users 폴더)에 바로 저장합니다!
+async function saveData() {
+  if (!currentUserUid) return; // 로그인 안 되어있으면 저장 안 함!
+
+  // 내 신분증 번호로 된 파일(문서) 찾기
+  const userDoc = doc(db, "users", currentUserUid);
+  
+  // 그 파일에 내 전재산 덮어씌우기
+  await setDoc(userDoc, {
+    monsterballs: myMonsterballs,
+    todos: myTodos,
+    pokedex: myPokedex,
+    partner: myPartner
+  });
+  console.log("☁️ 구글 클라우드 금고에 저장 완료!");
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('monsterballCount').innerText = myMonsterballs;
-  
-  // 🌟 화면이 켜지자마자 전투 필드의 내 포켓몬을 파트너로 바꿔주기
   const myPokemonImg = document.querySelector('.my-pokemon-area img');
   const myPokemonName = document.getElementById('myPokemonName');
-
   if (myPokemonImg) myPokemonImg.src = myPartner.img;
   if (myPokemonName) myPokemonName.innerText = myPartner.name;
 });
-
-function saveData() {
-  localStorage.setItem('myMonsterballs', myMonsterballs);
-  localStorage.setItem('myPokedex', JSON.stringify(myPokedex));
-  localStorage.setItem('myTodos', JSON.stringify(myTodos)); 
-  // 🌟 내 파트너 정보도 같이 저장!
-  localStorage.setItem('myPartner', JSON.stringify(myPartner)); 
-}
 
 
 // ==========================================
@@ -91,7 +86,6 @@ let current = null;
 let maxHP = 60;
 let currentHP = 60;
 let 현재진행중인할일버튼 = null; // 지금 어떤 퀘스트를 진행 중인지 기억할 상자
-
 
 // ==========================================
 // 2. 탭 메뉴 전환 기능
