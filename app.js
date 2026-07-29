@@ -697,7 +697,7 @@ function updatePokedexUI() {
 }
 updatePokedexUI();
 
-  // ==========================================
+// ==========================================
 // 🌟 8. 할 일 수정 모달창 기능
 // ==========================================
 const editModal = document.getElementById('editModal');
@@ -742,9 +742,9 @@ if (editSaveBtn) {
       editModal.classList.add('hidden'); 
     }
   });
-}
+} // 🌟🌟🌟 요놈이 문제의 핵심이었습니다! 완벽하게 닫아두었어요 🌟🌟🌟
 
-  // ==========================================
+// ==========================================
 // 🌟 9. 구글 트레이너 로그인 시스템
 // ==========================================
 const provider = new GoogleAuthProvider();
@@ -825,4 +825,4 @@ onAuthStateChanged(auth, async (user) => {
     renderTodos();
     updatePokedexUI();
   }
-});
+}); // 🌟 파일이 여기서 끝납니다!
