@@ -179,7 +179,7 @@ function renderTodos() {
       </div>
       <div class="todo-right">
         <!-- 🌟 이 부분이 빠져있으면 화면에 연필이 안 보입니다! 🌟 -->
-        <button type="button" class="todo-edit-btn" ${todo.isCompleted ? 'disabled style="opacity: 0.5;"' : ''}>✏️</button>
+        <button type="button" class="todo-edit-btn" ${todo.isCompleted ? 'disabled style="opacity: 0.5;"' : ''}>수정</button>
       <div class="todo-right">
         <button type="button" class="todo-battle-btn" 
           data-time="${todo.time}" data-hp="${todo.hp}" data-diff="${todo.difficulty}"
