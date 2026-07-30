@@ -595,11 +595,11 @@ ul {
 .add-friend-btn {
   padding: 10px 20px;
   border-radius: 20px;
-  border: none;
+  border: 2px solid white;
   background-color: #ff4b4b;
   color: white;
   font-weight: bold;
-  box-shadow: 0 4px 10px rgba(255, 75, 75, 0.3);
+  box-shadow: 0 4px 10px rgba(255, 75, 75, 0.6);
 }
 .add-friend-btn:hover {
   background-color: #e63a3a;
