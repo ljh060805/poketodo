@@ -26,10 +26,8 @@ body {
 /* 달력(날짜 선택기) 글씨체 변경 */
 #datePicker {
   font-family: 'Pretendard', sans-serif;
-  letter-spacing: 1px; /* 글자 간격을 살짝 띄워주면 숫자가 훨씬 예뻐 보입니다 */
+  letter-spacing: 1px;
 }
-
-/* 양옆 화살표 버튼도 같이 맞추고 싶다면 아래 코드도 추가하세요! */
 #prevDateBtn, #nextDateBtn {
   font-family: 'Pretendard', sans-serif;
 }
@@ -52,9 +50,52 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 15px 20px;
   margin: 10px;
-  color: gray;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 상단 인벤토리(지갑) 꾸미기 */
+.inventory {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 8px 18px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+.inventory strong {
+  color: #ff4c4c;
+  font-size: 1.2em;
+  margin: 0 4px;
+}
+
+/* 로그인 구역 */
+.auth-area {
+  text-align: center;
+}
+.user-name-display {
+  font-weight: bold;
+  margin-right: 10px;
+  color: #333;
+}
+.login-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  background-color: #fbbc05;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(251, 188, 5, 0.3);
+}
+.login-btn:hover {
+  background-color: #f4b400;
 }
 
 /* ========================================= */
@@ -79,6 +120,31 @@ body {
   padding: 15px;
 }
 
+.date-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.date-nav-btn {
+  border: none;
+  background: none;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: none;
+}
+.date-picker-input {
+  font-size: 20px;
+  border: none;
+  font-weight: bold;
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+  color: #333;
+  outline: none;
+  box-shadow: none;
+}
 
 /* ========================================= */
 /* 5. 대각선 배틀 필드 & 포켓몬 배치 */
@@ -91,18 +157,15 @@ body {
   overflow: hidden;
   padding: 10px;
 }
-
 img {
   height: 100px;
   width: 100px;
 }
-
 .wild-pokemon-area {
   position: absolute;
   top: 10%;
   right: 10%;
 }
-
 .my-pokemon-area {
   position: absolute;
   bottom: 10%;
@@ -118,7 +181,6 @@ img {
   margin: 5px 0;
   overflow: hidden;
 }
-
 .hp-bar-fill {
   width: 100%;
   height: 100%;
@@ -136,13 +198,12 @@ button, input, select {
   outline: none;
   background: white;
   color: #333;
-  box-shadow: 2px 2px 2cqb rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 button {
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-
 button:hover {
   background: #f3f4f6;
 }
@@ -155,7 +216,6 @@ ul {
   padding: 0;
   margin: 0;
 }
-
 #todoList li {
   display: flex;
   justify-content: space-between;
@@ -165,18 +225,15 @@ ul {
   border-radius: 8px;
   margin-bottom: 8px;
 }
-
 .todo-left, .todo-right {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .todo-battle-btn, .todo-delete-btn, .todo-edit-btn {
   padding: 4px 8px;
   font-size: 12px;
   border-radius: 4px;
-  cursor: pointer;
 }
 
 /* 난이도 뱃지 디자인 */
@@ -190,7 +247,6 @@ ul {
   text-align: center;
   min-width: 20px;
 }
-
 .todo-diff.easy { background-color: #4ade80; }
 .todo-diff.normal { background-color: #fb923c; }
 .todo-diff.hard { 
@@ -208,7 +264,6 @@ ul {
   align-items: center;
   gap: 15px;
 }
-
 .battle-btn {
   background-color: #e17e7e;
   color: white;
@@ -217,11 +272,11 @@ ul {
   padding: 12px 30px;
   border-radius: 30px;
   border: none;
-  cursor: pointer;
-  transition: all 0.2s;
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
-
+.battle-btn:hover {
+  background-color: #d16b6b;
+}
 .time-bar-bg {
   width: 85%;
   height: 30px;
@@ -231,7 +286,6 @@ ul {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
 }
-
 .time-text {
   position: absolute;
   top: 50%;
@@ -240,7 +294,6 @@ ul {
   font-weight: bold;
   color: #ffffff;
 }
-
 .time-bar-fill {
   width: 100%;
   height: 100%;
@@ -256,79 +309,55 @@ ul {
   50% { filter: sepia(1) hue-rotate(-50deg) saturate(5); opacity: 0.5; }
   100% { filter: brightness(1); opacity: 1; }
 }
-
 .hit-effect {
   animation: hit-blink 0.2s ease-in-out 3;
 }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-/* ========================================= */
-/* 🌟 전투 승리 & 보상 획득 애니메이션 🌟 */
-/* ========================================= */
-
-/* 1. 포켓몬 쓰러짐 (아래로 떨어지며 투명해짐) */
 @keyframes faint-drop {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(50px) scale(0.8); filter: grayscale(100%); }
 }
-
 .faint-effect {
-  animation: faint-drop 1s forwards ease-in; /* 1초 동안 실감 나게 쓰러짐 */
+  animation: faint-drop 1s forwards ease-in;
 }
 
-/* 2. 몬스터볼 획득 시 숫자 팡! 튀어 오르기 */
 @keyframes reward-bump {
   0% { transform: scale(1); color: inherit; }
   50% { 
     transform: scale(2); 
-    color: #ffd700; /* 황금색으로 번쩍! */
+    color: #ffd700;
     text-shadow: 0 0 15px rgba(255, 215, 0, 0.8); 
   }
   100% { transform: scale(1); color: inherit; }
 }
-
 .reward-bump {
-  display: inline-block; /* 글자 크기를 키우려면 필요함 */
+  display: inline-block;
   animation: reward-bump 0.8s ease-out;
 }
 
 /* ========================================= */
 /* 10. 상점(뽑기) 탭 스타일 */
 /* ========================================= */
-
 .title {
-  /* 1. 화면 한가운데로 정렬하는 마법 */
   display: block;
-  width: fit-content; /* 글자 길이만큼만 상자 크기를 맞춤 */
-  margin: 30px auto; /* 위아래 여백 30px, 양옆 여백은 자동으로 맞춰서 중앙 정렬 */
-  
-  /* 2. 예쁜 타원(알약) 모양을 만드는 마법 */
-  padding: 20px 40px; /* 위아래는 15px, 양옆은 40px로 길게 안쪽 여백 주기 */
-  border-radius: 20px; /* 값을 아주 크게 주면 양끝이 완벽한 반원이 됩니다 */
-  
-  /* 3. 디자인 디테일 */
+  width: fit-content;
+  margin: 30px auto; 
+  padding: 20px 40px;
+  border-radius: 20px;
   text-align: center;
   color: #333;
-  background-color: rgba(255, 255, 255, 0.7); /* 흰색 배경을 살짝 더 진하게 */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자를 조금 더 부드럽고 자연스럽게 수정 */
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
-
 .shop-grid {
   display: flex;
-  justify-content: center; /* 가운데 정렬 */
-  flex-wrap: wrap; /* 화면이 좁아지면 밑으로 떨어지게 */
-  gap: 50px; /* 머신 사이 간격 */
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 50px;
   padding: 20px;
 }
-
-/* 가챠 머신 뒷배경 (유리 카드) */
 .gacha-card {
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(10px);
@@ -340,46 +369,34 @@ ul {
   transition: transform 0.3s ease;
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
-
 .gacha-card:hover {
-  transform: translateY(-10px); /* 마우스 올리면 카드가 살짝 위로 뜹니다 */
+  transform: translateY(-10px);
 }
-
-/* 일반 머신 테두리 & 그림자 (노란색) */
 .normal-machine {
-  border: 3px solid;
-  border-color: rgba(192, 192, 192, 0.4); 
+  border: 3px solid rgba(192, 192, 192, 0.4); 
   box-shadow: 0 10px 30px rgba(165, 165, 165, 0.5);
 }
-
-/* 전설 머신 테두리 & 그림자 (빨간/보라색) */
 .legendary-machine {
-  border: 3px solid;
-  border-color: rgba(192, 192, 192, 0.4);
+  border: 3px solid rgba(192, 192, 192, 0.4);
   box-shadow: 0 10px 30px rgba(165, 165, 165, 0.5);
 }
 
-/* 🌟 머신 이미지 둥둥 떠다니는 애니메이션 */
 .gacha-img {
-  width: 220px; /* 준비하신 이미지 크기에 맞춰 조절하세요! */
+  width: 220px;
   height: auto;
   margin-bottom: 20px;
-  filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2)); /* 이미지 밑에 그림자 */
+  filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2));
   animation: float-gacha 3s ease-in-out infinite;
 }
-
-/* 전설 머신은 일반 머신과 박자가 엇갈리게 움직이도록 지연 시간 추가 */
 .legendary-machine .gacha-img {
   animation-delay: 1.5s; 
 }
-
 @keyframes float-gacha {
   0% { transform: translateY(0); }
-  50% { transform: translateY(-15px); } /* 위로 15px 올라감 */
+  50% { transform: translateY(-15px); }
   100% { transform: translateY(0); }
 }
 
-/* 가챠 버튼 공통 스타일 */
 .gacha-btn {
   font-size: 18px;
   font-weight: bold;
@@ -389,73 +406,25 @@ ul {
   color: white;
   width: 100%;
   margin-top: 15px;
-  transition: all 0.2s;
-  cursor: pointer;
 }
-
-/* 일반 뽑기 버튼 (골드 그라데이션) */
 .normal-btn {
   background: linear-gradient(135deg, #ffdd6d 0%, #e8d79a 100%);
   box-shadow: 0 4px 15px rgba(155, 155, 155, 0.4);
 }
 .normal-btn:hover {
   transform: scale(1.05);
-  background: linear-gradient(135deg, #ffdd6d 0%, #e8d79a 100%);
-  box-shadow: 0 4px 15px rgba(155, 155, 155, 0.4);
-  
 }
-
-/* 전설 뽑기 버튼 (마스터볼 느낌의 레드 그라데이션) */
 .legendary-btn {
   background: linear-gradient(135deg, #ff9597 0%, #c8727d 100%);
   box-shadow: 0 4px 15px rgba(116, 116, 116, 0.4);
 }
 .legendary-btn:hover {
   transform: scale(1.05);
-  background: linear-gradient(135deg, #ff9597 0%, #c8727d 100%);
-  box-shadow: 0 4px 15px rgba(116, 116, 116, 0.4);
 }
-
-/* 상단 인벤토리(지갑) 꾸미기 */
-.inventory {
-  background: rgba(255, 255, 255, 0.7); /* 반투명 흰색 배경 */
-  backdrop-filter: blur(10px);
-  padding: 8px 18px; /* 통통하게 */
-  border-radius: 20px; /* 알약 모양 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 */
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-}
-
-/* 숫자(0) 부분만 포인트 컬러 주기 */
-.inventory strong {
-  color: #ff4c4c; /* 눈에 띄는 빨간색 */
-  font-size: 1.2em; /* 숫자만 살짝 크게 */
-  margin: 0 4px;
-}
-
-/* 기존 .app-header에 배경과 그림자 추가 */
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  margin: 10px;
-  
-  /* 추가할 부분 */
-  background: rgba(255, 255, 255, 0.4); /* 연한 유리 배경 */
-  border-radius: 15px; /* 둥글게 */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* 아주 옅은 그림자 */
-}
-
 
 /* ========================================= */
-/* 11. 가챠 결과 팝업창 (모달) 스타일 */
+/* 11. 모달(팝업) 공통 및 도감 스타일 */
 /* ========================================= */
-
-/* 화면 전체를 덮는 어두운 배경 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -466,33 +435,37 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* 제일 위로 오게 함 */
+  z-index: 1000;
 }
-
-/* hidden 클래스가 있으면 숨기기 */
 .modal-overlay.hidden {
   display: none;
 }
-
-/* 팝업창 본체 */
 .modal-content {
   background: white;
   padding: 40px;
   border-radius: 20px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 띠용! 하고 튀어나오는 마법 */
+  animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
 .modal-pokemon-img {
   width: 180px;
   height: auto;
   margin: 20px 0;
   filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
 }
+@keyframes popUp {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
+/* 모달 및 팝업용 버튼 디자인 */
+.modal-btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
 .modal-btn {
-  background-color: #4CAF50;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -501,28 +474,28 @@ ul {
   cursor: pointer;
   margin-top: 10px;
 }
+.btn-green { background-color: #4CAF50; }
+.btn-green:hover { background-color: #45a049; }
+.btn-gray { background-color: #6c757d; }
+.btn-gray:hover { background-color: #5a6268; }
+.btn-yellow { background-color: #f6d365; color: #333; }
+.btn-yellow:hover { background-color: #e5c355; }
 
-.modal-btn:hover {
-  background-color: #45a049;
+/* 도감 세부 요소 */
+.dex-desc {
+  margin: 20px 0;
+  line-height: 1.6;
+  color: #555;
+  word-break: keep-all;
 }
 
-@keyframes popUp {
-  0% { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-
-/* ========================================= */
-/* 12. 도감 탭 스타일 */
-/* ========================================= */
 .pokedex-grid {
   display: flex;
-  flex-wrap: wrap; /* 카드가 많아지면 밑으로 떨어지게 */
+  flex-wrap: wrap;
   gap: 20px;
   padding: 20px;
   justify-content: center;
 }
-
 .pokedex-card {
   background: rgba(255, 255, 255, 0.8);
   border-radius: 15px;
@@ -531,31 +504,26 @@ ul {
   width: 120px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   transition: transform 0.2s;
-  position: relative; /* 개수 뱃지를 달기 위한 기준점 */
+  position: relative;
   border: 2px solid transparent;
 }
-
 .pokedex-card:hover {
   transform: translateY(-5px);
-  border-color: #f6d365; /* 마우스 올리면 노란 테두리 */
+  border-color: #f6d365;
 }
-
 .pokedex-card img {
   width: 80px;
   height: 80px;
-  object-fit: contain; /* 이미지가 찌그러지지 않게 */
+  object-fit: contain;
   margin-bottom: 10px;
   filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
 }
-
 .pokedex-card h4 {
   margin: 0;
   color: #333;
   font-size: 16px;
   font-weight: bold;
 }
-
-/* 획득 개수 뱃지 (오른쪽 위) */
 .pokedex-card .count {
   position: absolute;
   top: -10px;
@@ -569,28 +537,113 @@ ul {
   box-shadow: 0 2px 5px rgba(255, 76, 76, 0.4);
 }
 
+/* 할 일 수정 모달 요소 */
+.edit-modal-title { margin-bottom: 15px; }
+.edit-input { width: 80%; padding: 10px; margin-bottom: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; outline: none; }
+.edit-select { padding: 10px; margin-bottom: 20px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; outline: none; }
+
+/* ========================================= */
+/* 12. 소셜 (트레이너 광장) 탭 스타일 추가 */
+/* ========================================= */
+.social-title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* 내 코드 보여주기 상자 */
+.my-code-area {
+  background-color: #f0f8ff;
+  padding: 15px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+.my-code-label {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+.my-code-box {
+  font-size: 12px;
+  background: #ddd;
+  padding: 5px 8px;
+  border-radius: 5px;
+  color: #333;
+}
+.copy-code-btn {
+  font-size: 12px;
+  padding: 3px 8px;
+  margin-left: 5px;
+}
+
+/* 친구 추가 폼 영역 */
+.add-friend-area {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.add-friend-input {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+}
+.add-friend-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: #ff4b4b;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(255, 75, 75, 0.3);
+}
+.add-friend-btn:hover {
+  background-color: #e63a3a;
+}
+
+/* 친구 목록 영역 */
+.friend-list-title {
+  color: #333;
+  font-size: 16px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.empty-msg {
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+
 /* ==========================================
-   📱 모바일(스마트폰) 전용 화면 설정 (완성판)
+  📱 모바일(스마트폰) 전용 화면 설정 (완성판)
 ========================================== */
 @media screen and (max-width: 768px) {
-  /* 🌟 0. 앱 전체 여백과 박스 기준을 확실하게 잡아줍니다 */
   .app-container {
     width: 100% !important;
     padding: 15px !important;
     box-sizing: border-box !important;
   }
 
-  /* 1. 상단 탭 버튼들과 몬스터볼 개수 */
   header, .header-area {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important; 
-    box-sizing: border-box !important; /* 테두리 안쪽으로 크기 제한 */
+    box-sizing: border-box !important;
     gap: 10px !important;
     height: auto !important;
-    margin: 0 0 15px 0 !important; /* 헤더 아래쪽에만 살짝 간격 주기 */
+    margin: 0 0 15px 0 !important;
   }
-
   header div {
     display: flex !important;
     justify-content: center !important;
@@ -598,7 +651,6 @@ ul {
     width: 100% !important;
   }
 
-  /* 2. 메인 화면 탭 */
   #main-tab.active, 
   #main-tab.active > div {
     display: flex !important;
@@ -607,22 +659,20 @@ ul {
     box-sizing: border-box !important;
   }
 
-  /* 3. 양옆으로 나뉘어 있던 구역 (할 일, 배틀) */
   #main-tab.active > div > div, 
   .left-panel, .right-panel {
     width: 100% !important;
     max-width: 100% !important;
-    box-sizing: border-box !important; /* 🌟 오른쪽 잘림 현상 완벽 해결! */
+    box-sizing: border-box !important; 
     border-right: none !important;
     border-bottom: 2px solid #eee !important;
-    margin: 0 0 15px 0 !important; /* 패널들 사이 간격 */
-    border-radius: 15px !important; /* 모서리 둥글게 통일 */
+    margin: 0 0 15px 0 !important;
+    border-radius: 15px !important;
   }
 
-/* 4. 할 일 카드(li) 안의 버튼들이 찌그러지지 않게 위아래로 분리 */
   #todoList li {
     display: flex !important;
-    flex-direction: column !important; /* 위(글자) 아래(버튼)로 나눔 */
+    flex-direction: column !important; 
     align-items: flex-start !important;
     padding: 15px !important;
     height: auto !important;
@@ -635,12 +685,11 @@ ul {
 
   .todo-right {
     width: 100% !important;
-    justify-content: flex-end !important; /* 버튼들을 오른쪽으로 몰기 */
+    justify-content: flex-end !important; 
     flex-wrap: wrap !important;
     gap: 8px !important;
   }
   
-  /* 5. 도감 카드 크기 조절 */
   .pokedex-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
   }
