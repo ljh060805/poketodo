@@ -802,12 +802,14 @@ onAuthStateChanged(auth, async (user) => {
     renderTodos();     
     updatePokedexUI(); 
     renderFriendList(); // 🌟 로그인 시 친구 목록 불러오기!
+    updateInboxUI();
 
   } else {
     currentUserUid = null;
     loginBtn.innerText = '🌐 구글로 로그인';
     loginBtn.style.backgroundColor = '#fbbc05'; 
     userNameDisplay.innerText = '로그인을 해주세요!';
+    updateInboxUI();
     
     myMonsterballs = 0;
     myTodos = [];
@@ -964,5 +966,117 @@ async function renderFriendList() {
     });
   } else {
     friendListUI.innerHTML = '<p class="empty-msg">친구 목록을 불러오지 못했습니다.</p>';
+  }
+}
+
+// ==========================================
+// 🌟 11. 우편함 (수락/거절) 기능
+// ==========================================
+
+// 우편함 화면 열고 닫기 버튼 설정
+const inboxBtn = document.getElementById('inboxBtn');
+const inboxModal = document.getElementById('inboxModal');
+const inboxCloseBtn = document.getElementById('inboxCloseBtn');
+
+if (inboxBtn && inboxModal) {
+  inboxBtn.addEventListener('click', () => { inboxModal.classList.remove('hidden'); });
+}
+if (inboxCloseBtn && inboxModal) {
+  inboxCloseBtn.addEventListener('click', () => { inboxModal.classList.add('hidden'); });
+}
+
+// 💌 편지 목록과 빨간 뱃지를 실시간으로 그려주는 마법!
+function updateInboxUI() {
+  const badge = document.getElementById('inboxBadge');
+  const inboxList = document.getElementById('inboxList');
+  
+  // 1. 빨간색 뱃지 업데이트 (편지가 있으면 띄우고 없으면 숨김)
+  if (myInbox.length > 0) {
+    badge.style.display = 'inline-block';
+    badge.innerText = myInbox.length;
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // 2. 우편함 팝업창 안의 편지 목록 그리기
+  if (inboxList) {
+    inboxList.innerHTML = '';
+    
+    if (myInbox.length === 0) {
+      inboxList.innerHTML = '<p class="empty-msg">새로 도착한 편지가 없습니다.</p>';
+      return;
+    }
+
+    // 편지가 있다면 하나씩 화면에 카드로 만듦
+    myInbox.forEach((msg) => {
+      if (msg.type === 'friend_request') {
+        const li = document.createElement('li');
+        li.style.cssText = "background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; border: 1px solid #eee;";
+        li.innerHTML = `
+          <p style="margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4;">
+            <strong>${msg.fromName}</strong> 트레이너가 동료 요청을 보냈습니다!
+          </p>
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button class="accept-btn" data-id="${msg.id}" data-uid="${msg.fromUid}" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">수락</button>
+            <button class="reject-btn" data-id="${msg.id}" style="background: #ff4b4b; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">거절</button>
+          </div>
+        `;
+        inboxList.appendChild(li);
+      }
+    });
+
+    // 3. [수락] 버튼 기능: 양쪽 수첩에 서로를 추가!
+    const acceptBtns = inboxList.querySelectorAll('.accept-btn');
+    acceptBtns.forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const msgId = Number(e.target.getAttribute('data-id'));
+        const senderUid = e.target.getAttribute('data-uid');
+        
+        // 내 수첩에 친구 적기
+        if (!myFriends.includes(senderUid)) {
+          myFriends.push(senderUid);
+        }
+
+        try {
+          // ☁️ 상대방 수첩에도 나를 몰래 적어주기 (서버 통신)
+          const senderRef = doc(db, "users", senderUid);
+          const senderSnap = await getDoc(senderRef);
+          if (senderSnap.exists()) {
+            const senderData = senderSnap.data();
+            let senderFriends = senderData.friends || [];
+            
+            if (!senderFriends.includes(currentUserUid)) {
+              senderFriends.push(currentUserUid);
+              // 상대방 데이터 덮어씌우기
+              await setDoc(senderRef, { friends: senderFriends }, { merge: true });
+            }
+          }
+        } catch (err) {
+          console.error("상대방 수첩 업데이트 실패:", err);
+        }
+
+        // 편지 지우고 내 데이터베이스 저장
+        myInbox = myInbox.filter(m => m.id !== msgId);
+        saveData();
+        
+        alert("🎉 친구 요청을 수락했습니다! 서로의 목록에 추가됩니다.");
+        
+        // 화면 새로고침
+        updateInboxUI();
+        renderFriendList();
+      });
+    });
+
+    // 4. [거절] 버튼 기능: 편지만 조용히 찢어버림
+    const rejectBtns = inboxList.querySelectorAll('.reject-btn');
+    rejectBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const msgId = Number(e.target.getAttribute('data-id'));
+        
+        myInbox = myInbox.filter(m => m.id !== msgId);
+        saveData();
+        updateInboxUI();
+      });
+    });
   }
 }
