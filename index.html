@@ -159,6 +159,33 @@
         </div>
       </section>
 
+  <!-- ========================================== -->
+  <!-- 🌟 4단계: 트레이너 광장 (기획안 적용 버전) -->
+  <!-- ========================================== -->
+      <div id="socialTab" class="tab-content">
+        <h2 style="text-align: center; color: #333; margin-bottom: 10px;">🌐 트레이너 광장</h2>
+        
+        <!-- [1] 내 친구 코드 (신분증 번호) 보여주기 영역 -->
+        <div style="background-color: #f0f8ff; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
+          <p style="font-size: 14px; color: #555; margin-bottom: 5px;">내 트레이너 코드 (친구에게 알려주세요!)</p>
+          <code id="myFriendCode" style="font-size: 12px; background: #ddd; padding: 5px; border-radius: 5px;">로그인 시 발급됩니다</code>
+          <button id="copyCodeBtn" style="margin-left: 5px; font-size: 12px; padding: 3px 8px; cursor: pointer;">복사</button>
+        </div>
+    
+        <!-- [2] 친구 추가 영역 -->
+        <div style="display: flex; gap: 5px; margin-bottom: 20px;">
+          <input type="text" id="friendCodeInput" placeholder="친구의 코드를 입력하세요" style="flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc;">
+          <button id="addFriendBtn" style="padding: 10px 20px; border-radius: 20px; border: none; background-color: #ff4b4b; color: white; font-weight: bold; cursor: pointer;">친구 추가</button>
+        </div>
+    
+        <!-- [3] 내 친구 목록 영역 -->
+        <h3 style="color: #333; font-size: 16px; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-bottom: 15px;">나의 친구 목록</h3>
+        <ul id="friendList" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+          <!-- 자바스크립트가 여기에 친구 목록을 꽂아넣어 줍니다! -->
+          <p style="text-align: center; color: #999; font-size: 14px; padding: 20px 0;">아직 등록된 친구가 없습니다.</p>
+        </ul>
+      </div>
+
     </main>
             <!-- 🌟 할 일 수정 팝업창 -->
       <div id="editModal" class="modal-overlay hidden">
