@@ -844,7 +844,7 @@ if (copyCodeBtn) {
   });
 }
 
-// [2] 친구 추가하기
+// [2] 친구 추가하기 (🌟 맞친구 수락 요청 버전으로 업그레이드!)
 const addFriendBtn = document.getElementById('addFriendBtn');
 const friendCodeInput = document.getElementById('friendCodeInput');
 
@@ -854,20 +854,43 @@ if (addFriendBtn) {
 
     if (!friendCode) { alert('친구의 코드를 입력해주세요!'); return; }
     if (friendCode === currentUserUid) { alert('앗! 자기 자신의 코드는 추가할 수 없습니다.'); return; }
-    if (myFriends.includes(friendCode)) { alert('이미 등록되어 있는 친구입니다!'); return; }
+    if (myFriends.includes(friendCode)) { alert('이미 수첩에 등록되어 있는 친구입니다!'); return; }
 
-    addFriendBtn.innerText = '검색 중...';
+    addFriendBtn.innerText = '편지 전송 중...'; // 로딩 글자 변경
     
     try {
+      // ☁️ 1. 친구의 데이터베이스 금고를 찾습니다.
       const friendDocRef = doc(db, "users", friendCode);
       const friendSnap = await getDoc(friendDocRef);
 
       if (friendSnap.exists()) {
-        myFriends.push(friendCode);
-        saveData(); 
-        alert('🎉 친구 추가 성공!');
+        const friendData = friendSnap.data();
+        let friendInbox = friendData.inbox || [];
+
+        // ☁️ 2. 혹시 내가 이미 요청을 보냈는지 확인합니다. (도배 방지)
+        const alreadySent = friendInbox.find(msg => msg.type === 'friend_request' && msg.fromUid === currentUserUid);
+        if (alreadySent) {
+          alert('이미 친구 요청을 보낸 상태입니다! 친구가 수락할 때까지 기다려주세요.');
+          addFriendBtn.innerText = '친구 추가';
+          return;
+        }
+
+        // ☁️ 3. 친구 우편함에 넣을 [요청 편지 객체]를 예쁘게 포장합니다.
+        const newLetter = {
+          id: Date.now(), // 편지의 고유 번호
+          type: 'friend_request', // 편지의 종류 (친구 요청)
+          fromUid: currentUserUid, // 보낸 사람의 코드
+          fromName: myPartner.name // 보낸 사람의 닉네임 (파트너 포켓몬 이름)
+        };
+
+        friendInbox.push(newLetter); // 친구 우편함에 쏙 넣기
+
+        // ☁️ 4. 변경된 우편함만 친구 서버에 덮어씌웁니다! (merge: true가 핵심!)
+        // setDoc 이라는 요정이 'inbox'만 딱 골라서 업데이트 해줍니다.
+        await setDoc(friendDocRef, { inbox: friendInbox }, { merge: true });
+
+        alert('💌 친구에게 동료 요청 편지를 성공적으로 보냈습니다!');
         friendCodeInput.value = ''; 
-        renderFriendList(); // 🌟 친구 추가 성공 시 목록 새로고침!
       } else {
         alert('❌ 해당 코드를 가진 트레이너를 찾을 수 없습니다.');
       }
@@ -879,7 +902,6 @@ if (addFriendBtn) {
     }
   });
 }
-
 // [3] 🌟 새로 추가됨: 친구 목록을 화면에 예쁘게 그려주는 함수!
 async function renderFriendList() {
   const friendListUI = document.getElementById('friendList');
