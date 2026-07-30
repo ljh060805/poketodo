@@ -755,7 +755,6 @@ const provider = new GoogleAuthProvider();
 const loginBtn = document.getElementById('loginBtn');
 const userNameDisplay = document.getElementById('userNameDisplay');
 
-// 로그인/로그아웃 버튼 클릭 이벤트
 if (loginBtn) {
   loginBtn.addEventListener('click', () => {
     if (loginBtn.innerText === '로그아웃') {
@@ -768,14 +767,12 @@ if (loginBtn) {
   });
 }
 
-// 유저의 상태(로그인 됨/안 됨)를 실시간으로 감시하는 요정
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // 🟢 유저가 접속했을 때
     currentUserUid = user.uid;
     loginBtn.innerText = '로그아웃';
     loginBtn.style.backgroundColor = '#ddd'; 
-    userNameDisplay.innerText = `${user.displayName} 트레이너님!`;
+    userNameDisplay.innerText = `👋 ${user.displayName} 트레이너님!`;
     
     const userDoc = doc(db, "users", currentUserUid);
     const docSnap = await getDoc(userDoc);
@@ -786,31 +783,29 @@ onAuthStateChanged(auth, async (user) => {
       myTodos = data.todos || [];
       myPokedex = data.pokedex || [];
       myPartner = data.partner || { name: '피카츄', img: pikachuImgUrl };
-      myFriends = data.friends || []; // 🌟 친구 수첩 불러오기
-      myInbox = data.inbox || [];     // 🌟 우편함 불러오기
+      myFriends = data.friends || []; 
+      myInbox = data.inbox || [];     
     } else {
       myPokedex = [{ id: 25, name: '피카츄', img: pikachuImgUrl, count: 1 }];
       saveData(); 
     }
 
-    // 🎨 화면 업데이트
     document.getElementById('monsterballCount').innerText = myMonsterballs;
     const myPokemonImg = document.querySelector('.my-pokemon-area img');
     const myPokemonName = document.getElementById('myPokemonName');
     if (myPokemonImg) myPokemonImg.src = myPartner.img;
     if (myPokemonName) myPokemonName.innerText = myPartner.name;
     
-    // 🌟 광장 탭에 내 고유 코드(신분증 번호) 표시하기!
     const myFriendCodeUI = document.getElementById('myFriendCode');
     if (myFriendCodeUI) myFriendCodeUI.innerText = currentUserUid;
 
     renderTodos();     
     updatePokedexUI(); 
+    renderFriendList(); // 🌟 로그인 시 친구 목록 불러오기!
 
   } else {
-    // 🔴 접속이 끊겼거나 로그아웃 했을 때
     currentUserUid = null;
-    loginBtn.innerText = '구글로 로그인';
+    loginBtn.innerText = '🌐 구글로 로그인';
     loginBtn.style.backgroundColor = '#fbbc05'; 
     userNameDisplay.innerText = '로그인을 해주세요!';
     
@@ -820,22 +815,22 @@ onAuthStateChanged(auth, async (user) => {
     myPartner = { name: '피카츄', img: pikachuImgUrl };
     myFriends = [];
     myInbox = [];
-    document.getElementById('monsterballCount').innerText = 0;
     
+    document.getElementById('monsterballCount').innerText = 0;
     const myFriendCodeUI = document.getElementById('myFriendCode');
     if (myFriendCodeUI) myFriendCodeUI.innerText = '로그인 시 발급됩니다';
 
     renderTodos();
     updatePokedexUI();
+    renderFriendList(); // 🌟 로그아웃 시 친구 목록 지우기!
   }
 });
-
 
 // ==========================================
 // 🌟 10. 트레이너 광장 (소셜) 기능
 // ==========================================
 
-// [1] 내 코드 복사하기 기능
+// [1] 내 코드 복사하기
 const copyCodeBtn = document.getElementById('copyCodeBtn');
 if (copyCodeBtn) {
   copyCodeBtn.addEventListener('click', () => {
@@ -843,57 +838,109 @@ if (copyCodeBtn) {
       alert('로그인을 먼저 해주세요!');
       return;
     }
-    // 내 코드를 클립보드(복사 상태)에 저장합니다.
     navigator.clipboard.writeText(currentUserUid).then(() => {
       alert('내 트레이너 코드가 복사되었습니다!\n친구에게 카톡 등으로 알려주세요.');
     });
   });
 }
 
-// [2] 친구 추가하기 기능
+// [2] 친구 추가하기
 const addFriendBtn = document.getElementById('addFriendBtn');
 const friendCodeInput = document.getElementById('friendCodeInput');
 
 if (addFriendBtn) {
   addFriendBtn.addEventListener('click', async () => {
-    const friendCode = friendCodeInput.value.trim(); // 입력한 코드 가져오기
+    const friendCode = friendCodeInput.value.trim(); 
 
-    if (!friendCode) {
-      alert('친구의 코드를 입력해주세요!');
-      return;
-    }
-    if (friendCode === currentUserUid) {
-      alert('앗! 자기 자신의 코드는 추가할 수 없습니다.');
-      return;
-    }
-    if (myFriends.includes(friendCode)) {
-      alert('이미 등록되어 있는 친구입니다!');
-      return;
-    }
+    if (!friendCode) { alert('친구의 코드를 입력해주세요!'); return; }
+    if (friendCode === currentUserUid) { alert('앗! 자기 자신의 코드는 추가할 수 없습니다.'); return; }
+    if (myFriends.includes(friendCode)) { alert('이미 등록되어 있는 친구입니다!'); return; }
 
-    // 버튼 글자를 바꿔서 로딩 중임을 알려줌
     addFriendBtn.innerText = '검색 중...';
     
     try {
-      // ☁️ 구글 서버(users 폴더)에서 친구 코드가 진짜 있는지 검색!
       const friendDocRef = doc(db, "users", friendCode);
       const friendSnap = await getDoc(friendDocRef);
 
       if (friendSnap.exists()) {
-        // 친구 찾기 성공! 내 수첩에 적고 서버에 저장
         myFriends.push(friendCode);
         saveData(); 
-        alert('친구 추가 성공! (목록 새로고침은 다음 단계에서 만들게요!)');
-        friendCodeInput.value = ''; // 입력칸 비우기
+        alert('🎉 친구 추가 성공!');
+        friendCodeInput.value = ''; 
+        renderFriendList(); // 🌟 친구 추가 성공 시 목록 새로고침!
       } else {
-        alert('해당 코드를 가진 트레이너를 찾을 수 없습니다. 코드를 다시 확인해주세요!');
+        alert('❌ 해당 코드를 가진 트레이너를 찾을 수 없습니다.');
       }
     } catch (error) {
       console.error(error);
       alert('오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
     } finally {
-      // 로딩이 끝나면 원래 글자로 되돌림
       addFriendBtn.innerText = '친구 추가';
     }
   });
+}
+
+// [3] 🌟 새로 추가됨: 친구 목록을 화면에 예쁘게 그려주는 함수!
+async function renderFriendList() {
+  const friendListUI = document.getElementById('friendList');
+  if (!friendListUI) return;
+
+  friendListUI.innerHTML = ''; 
+
+  if (myFriends.length === 0) {
+    friendListUI.innerHTML = '<p class="empty-msg">아직 등록된 친구가 없습니다.</p>';
+    return;
+  }
+
+  // 데이터베이스 통신 중일 때 보여줄 메시지
+  friendListUI.innerHTML = '<p class="empty-msg">친구들의 정보를 불러오는 중입니다... 📡</p>';
+  
+  const listHTML = [];
+
+  // 내 수첩(myFriends)에 있는 친구 코드를 하나씩 돌면서 서버에 물어봅니다.
+  for (let i = 0; i < myFriends.length; i++) {
+    const friendUid = myFriends[i];
+    try {
+      const friendDoc = await getDoc(doc(db, "users", friendUid));
+      if (friendDoc.exists()) {
+        const data = friendDoc.data();
+        
+        // 🌟 유저의 '파트너 포켓몬 이름'을 트레이너 닉네임처럼 사용합니다! (예: 피카츄 트레이너)
+        const partnerName = data.partner ? data.partner.name : '알 수 없는';
+        const partnerImg = data.partner ? data.partner.img : 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+        const balls = data.monsterballs || 0;
+
+        // 리스트 카드(li) HTML 만들기
+        listHTML.push(`
+          <li style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.7); padding: 12px 15px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <img src="${partnerImg}" alt="파트너" style="width: 50px; height: 50px; object-fit: contain; background: white; border-radius: 50%; padding: 5px; border: 2px solid #f6d365;">
+              <div>
+                <strong style="display: block; font-size: 16px; color: #333; margin-bottom: 4px;">${partnerName} 트레이너</strong>
+                <span style="font-size: 12px; color: #666; font-weight: bold;">🪙 몬스터볼: ${balls}개</span>
+              </div>
+            </div>
+            <button class="visit-btn" data-uid="${friendUid}" style="background-color: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);">방문하기</button>
+          </li>
+        `);
+      }
+    } catch (error) {
+      console.error("친구 데이터 불러오기 실패:", error);
+    }
+  }
+
+  if (listHTML.length > 0) {
+    friendListUI.innerHTML = listHTML.join('');
+    
+    // 🌟 껍데기만 만들어둔 [방문하기] 버튼 클릭 이벤트 연결
+    const visitBtns = friendListUI.querySelectorAll('.visit-btn');
+    visitBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const targetUid = e.target.getAttribute('data-uid');
+        alert('친구의 미니홈피로 이동합니다!\n(이 기능은 다음 단계에서 만들 예정입니다 😆)');
+      });
+    });
+  } else {
+    friendListUI.innerHTML = '<p class="empty-msg">친구 목록을 불러오지 못했습니다.</p>';
+  }
 }
