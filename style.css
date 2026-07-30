@@ -273,7 +273,7 @@ ul {
   padding: 12px 30px;
   border-radius: 30px;
   border: none;
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  /*box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);*/
 }
 .battle-btn:hover {
   background-color: #d16b6b;
