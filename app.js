@@ -775,7 +775,7 @@ onAuthStateChanged(auth, async (user) => {
     currentUserUid = user.uid;
     loginBtn.innerText = '로그아웃';
     loginBtn.style.backgroundColor = '#ddd'; 
-    userNameDisplay.innerText = `👋 ${user.displayName} 트레이너님!`;
+    userNameDisplay.innerText = `${user.displayName} 트레이너님!`;
     
     const userDoc = doc(db, "users", currentUserUid);
     const docSnap = await getDoc(userDoc);
@@ -810,7 +810,7 @@ onAuthStateChanged(auth, async (user) => {
   } else {
     // 🔴 접속이 끊겼거나 로그아웃 했을 때
     currentUserUid = null;
-    loginBtn.innerText = '🌐 구글로 로그인';
+    loginBtn.innerText = '구글로 로그인';
     loginBtn.style.backgroundColor = '#fbbc05'; 
     userNameDisplay.innerText = '로그인을 해주세요!';
     
@@ -883,10 +883,10 @@ if (addFriendBtn) {
         // 친구 찾기 성공! 내 수첩에 적고 서버에 저장
         myFriends.push(friendCode);
         saveData(); 
-        alert('🎉 친구 추가 성공! (목록 새로고침은 다음 단계에서 만들게요!)');
+        alert('친구 추가 성공! (목록 새로고침은 다음 단계에서 만들게요!)');
         friendCodeInput.value = ''; // 입력칸 비우기
       } else {
-        alert('❌ 해당 코드를 가진 트레이너를 찾을 수 없습니다. 코드를 다시 확인해주세요!');
+        alert('해당 코드를 가진 트레이너를 찾을 수 없습니다. 코드를 다시 확인해주세요!');
       }
     } catch (error) {
       console.error(error);
