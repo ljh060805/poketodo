@@ -759,20 +759,11 @@ const userNameDisplay = document.getElementById('userNameDisplay');
 if (loginBtn) {
   loginBtn.addEventListener('click', () => {
     if (loginBtn.innerText === '로그아웃') {
-      // 이미 로그인 된 상태라면 로그아웃 실행!
-      signOut(auth).then(() => {
-        alert("성공적으로 로그아웃 되었습니다.");
-      });
+      signOut(auth).then(() => { alert("성공적으로 로그아웃 되었습니다."); });
     } else {
-      // 로그인 안 된 상태라면 구글 로그인 창 띄우기!
       signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-          console.log("로그인 성공!", user.displayName);
-        }).catch((error) => {
-          console.error("로그인 에러:", error);
-          alert("로그인 중 문제가 발생했습니다.");
-        });
+        .then((result) => { console.log("로그인 성공!", result.user.displayName); })
+        .catch((error) => { console.error("로그인 에러:", error); alert("로그인 중 문제가 발생했습니다."); });
     }
   });
 }
@@ -781,37 +772,40 @@ if (loginBtn) {
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     // 🟢 유저가 접속했을 때
-    currentUserUid = user.uid; // 유저의 고유 신분증 번호 발급!
+    currentUserUid = user.uid;
     loginBtn.innerText = '로그아웃';
     loginBtn.style.backgroundColor = '#ddd'; 
     userNameDisplay.innerText = `👋 ${user.displayName} 트레이너님!`;
     
-    // ☁️ 1. 구글 서버(users 폴더)에서 내 신분증 파일 꺼내오기
     const userDoc = doc(db, "users", currentUserUid);
     const docSnap = await getDoc(userDoc);
 
     if (docSnap.exists()) {
-      // 📂 예전에 플레이하던 데이터가 있다면 내 변수들에 채워넣기
       const data = docSnap.data();
       myMonsterballs = data.monsterballs || 0;
       myTodos = data.todos || [];
       myPokedex = data.pokedex || [];
       myPartner = data.partner || { name: '피카츄', img: pikachuImgUrl };
+      myFriends = data.friends || []; // 🌟 친구 수첩 불러오기
+      myInbox = data.inbox || [];     // 🌟 우편함 불러오기
     } else {
-      // 🐣 처음 로그인한 신규 트레이너라면 기본 세팅 후 서버에 첫 저장!
       myPokedex = [{ id: 25, name: '피카츄', img: pikachuImgUrl, count: 1 }];
       saveData(); 
     }
 
-    // 🎨 2. 서버에서 가져온 데이터로 화면 예쁘게 업데이트하기
+    // 🎨 화면 업데이트
     document.getElementById('monsterballCount').innerText = myMonsterballs;
     const myPokemonImg = document.querySelector('.my-pokemon-area img');
     const myPokemonName = document.getElementById('myPokemonName');
     if (myPokemonImg) myPokemonImg.src = myPartner.img;
     if (myPokemonName) myPokemonName.innerText = myPartner.name;
     
-    renderTodos();     // 할일 화면 다시 그리기
-    updatePokedexUI(); // 도감 화면 다시 그리기
+    // 🌟 광장 탭에 내 고유 코드(신분증 번호) 표시하기!
+    const myFriendCodeUI = document.getElementById('myFriendCode');
+    if (myFriendCodeUI) myFriendCodeUI.innerText = currentUserUid;
+
+    renderTodos();     
+    updatePokedexUI(); 
 
   } else {
     // 🔴 접속이 끊겼거나 로그아웃 했을 때
@@ -820,13 +814,86 @@ onAuthStateChanged(auth, async (user) => {
     loginBtn.style.backgroundColor = '#fbbc05'; 
     userNameDisplay.innerText = '로그인을 해주세요!';
     
-    // 남이 내 화면 못 보게 데이터 싹 비우기
     myMonsterballs = 0;
     myTodos = [];
     myPokedex = [];
     myPartner = { name: '피카츄', img: pikachuImgUrl };
+    myFriends = [];
+    myInbox = [];
     document.getElementById('monsterballCount').innerText = 0;
+    
+    const myFriendCodeUI = document.getElementById('myFriendCode');
+    if (myFriendCodeUI) myFriendCodeUI.innerText = '로그인 시 발급됩니다';
+
     renderTodos();
     updatePokedexUI();
   }
-}); // 🌟 파일이 여기서 끝납니다!
+});
+
+
+// ==========================================
+// 🌟 10. 트레이너 광장 (소셜) 기능
+// ==========================================
+
+// [1] 내 코드 복사하기 기능
+const copyCodeBtn = document.getElementById('copyCodeBtn');
+if (copyCodeBtn) {
+  copyCodeBtn.addEventListener('click', () => {
+    if (!currentUserUid) {
+      alert('로그인을 먼저 해주세요!');
+      return;
+    }
+    // 내 코드를 클립보드(복사 상태)에 저장합니다.
+    navigator.clipboard.writeText(currentUserUid).then(() => {
+      alert('내 트레이너 코드가 복사되었습니다!\n친구에게 카톡 등으로 알려주세요.');
+    });
+  });
+}
+
+// [2] 친구 추가하기 기능
+const addFriendBtn = document.getElementById('addFriendBtn');
+const friendCodeInput = document.getElementById('friendCodeInput');
+
+if (addFriendBtn) {
+  addFriendBtn.addEventListener('click', async () => {
+    const friendCode = friendCodeInput.value.trim(); // 입력한 코드 가져오기
+
+    if (!friendCode) {
+      alert('친구의 코드를 입력해주세요!');
+      return;
+    }
+    if (friendCode === currentUserUid) {
+      alert('앗! 자기 자신의 코드는 추가할 수 없습니다.');
+      return;
+    }
+    if (myFriends.includes(friendCode)) {
+      alert('이미 등록되어 있는 친구입니다!');
+      return;
+    }
+
+    // 버튼 글자를 바꿔서 로딩 중임을 알려줌
+    addFriendBtn.innerText = '검색 중...';
+    
+    try {
+      // ☁️ 구글 서버(users 폴더)에서 친구 코드가 진짜 있는지 검색!
+      const friendDocRef = doc(db, "users", friendCode);
+      const friendSnap = await getDoc(friendDocRef);
+
+      if (friendSnap.exists()) {
+        // 친구 찾기 성공! 내 수첩에 적고 서버에 저장
+        myFriends.push(friendCode);
+        saveData(); 
+        alert('🎉 친구 추가 성공! (목록 새로고침은 다음 단계에서 만들게요!)');
+        friendCodeInput.value = ''; // 입력칸 비우기
+      } else {
+        alert('❌ 해당 코드를 가진 트레이너를 찾을 수 없습니다. 코드를 다시 확인해주세요!');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
+    } finally {
+      // 로딩이 끝나면 원래 글자로 되돌림
+      addFriendBtn.innerText = '친구 추가';
+    }
+  });
+}
