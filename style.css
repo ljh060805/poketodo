@@ -408,18 +408,18 @@ ul {
   width: 100%;
   margin-top: 15px;
 }
-.normal-btn {
+.legendary-btn {
   background: linear-gradient(135deg, #ffdd6d 0%, #e8d79a 100%);
   box-shadow: 0 4px 15px rgba(155, 155, 155, 0.4);
 }
-.normal-btn:hover {
+.legendary-btn:hover {
   transform: scale(1.05);
 }
-.legendary-btn {
+.normal-btn {
   background: linear-gradient(135deg, #ff9597 0%, #c8727d 100%);
   box-shadow: 0 4px 15px rgba(116, 116, 116, 0.4);
 }
-.legendary-btn:hover {
+.normal-btn:hover {
   transform: scale(1.05);
 }
 
