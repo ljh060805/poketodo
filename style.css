@@ -554,7 +554,7 @@ ul {
 
 /* 내 코드 보여주기 상자 */
 .my-code-area {
-  background-color: #f0f8ff;
+  background-color: rgba(161, 206, 146, 0.4);
   padding: 15px;
   border-radius: 15px;
   text-align: center;
