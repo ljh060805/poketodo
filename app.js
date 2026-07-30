@@ -904,7 +904,7 @@ if (addFriendBtn) {
     }
   });
 }
-// [3] 🌟 새로 추가됨: 친구 목록을 화면에 예쁘게 그려주는 함수!
+// [3] 🌟 친구 목록을 화면에 예쁘게 그려주는 함수 (삭제 기능 추가!)
 async function renderFriendList() {
   const friendListUI = document.getElementById('friendList');
   if (!friendListUI) return;
@@ -916,12 +916,10 @@ async function renderFriendList() {
     return;
   }
 
-  // 데이터베이스 통신 중일 때 보여줄 메시지
   friendListUI.innerHTML = '<p class="empty-msg">친구들의 정보를 불러오는 중입니다... 📡</p>';
   
   const listHTML = [];
 
-  // 내 수첩(myFriends)에 있는 친구 코드를 하나씩 돌면서 서버에 물어봅니다.
   for (let i = 0; i < myFriends.length; i++) {
     const friendUid = myFriends[i];
     try {
@@ -929,12 +927,11 @@ async function renderFriendList() {
       if (friendDoc.exists()) {
         const data = friendDoc.data();
         
-        // 🌟 유저의 '파트너 포켓몬 이름'을 트레이너 닉네임처럼 사용합니다! (예: 피카츄 트레이너)
         const partnerName = data.partner ? data.partner.name : '알 수 없는';
         const partnerImg = data.partner ? data.partner.img : 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
         const balls = data.monsterballs || 0;
 
-        // 리스트 카드(li) HTML 만들기
+        // 🌟 방문 버튼 옆에 삭제 버튼 추가!
         listHTML.push(`
           <li style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.7); padding: 12px 15px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
             <div style="display: flex; align-items: center; gap: 15px;">
@@ -944,7 +941,10 @@ async function renderFriendList() {
                 <span style="font-size: 12px; color: #666; font-weight: bold;">🪙 몬스터볼: ${balls}개</span>
               </div>
             </div>
-            <button class="visit-btn" data-uid="${friendUid}" style="background-color: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);">방문하기</button>
+            <div style="display: flex; gap: 5px;">
+              <button class="visit-btn" data-uid="${friendUid}" style="background-color: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);">방문</button>
+              <button class="delete-friend-btn" data-uid="${friendUid}" style="background-color: #ff4b4b; color: white; border: none; padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 75, 75, 0.3);">삭제</button>
+            </div>
           </li>
         `);
       }
@@ -956,7 +956,7 @@ async function renderFriendList() {
   if (listHTML.length > 0) {
     friendListUI.innerHTML = listHTML.join('');
     
-    // 🌟 껍데기만 만들어둔 [방문하기] 버튼 클릭 이벤트 연결
+    // [방문하기] 버튼 이벤트
     const visitBtns = friendListUI.querySelectorAll('.visit-btn');
     visitBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -964,6 +964,45 @@ async function renderFriendList() {
         alert('친구의 미니홈피로 이동합니다!\n(이 기능은 다음 단계에서 만들 예정입니다 😆)');
       });
     });
+
+    // 🌟 [삭제] 버튼 이벤트: 양쪽 수첩에서 모두 지우기
+    const deleteBtns = friendListUI.querySelectorAll('.delete-friend-btn');
+    deleteBtns.forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const targetUid = e.target.getAttribute('data-uid');
+        
+        // 진짜 지울 건지 한 번 물어보기
+        if (!confirm('정말 이 트레이너와 친구를 끊으시겠습니까?\n양쪽 목록에서 모두 삭제됩니다.')) {
+          return; 
+        }
+
+        // 1. 내 수첩에서 친구 지우고 저장
+        myFriends = myFriends.filter(uid => uid !== targetUid);
+        saveData();
+
+        try {
+          // 2. 구글 서버에 있는 친구 수첩을 열어서 나를 지움
+          const friendRef = doc(db, "users", targetUid);
+          const friendSnap = await getDoc(friendRef);
+          if (friendSnap.exists()) {
+            const friendData = friendSnap.data();
+            let friendFriends = friendData.friends || [];
+            
+            // 친구의 수첩에서 내 코드(currentUserUid) 빼기
+            friendFriends = friendFriends.filter(uid => uid !== currentUserUid);
+            
+            // 친구 수첩 다시 덮어씌우기
+            await setDoc(friendRef, { friends: friendFriends }, { merge: true });
+          }
+        } catch (err) {
+          console.error("상대방 수첩 업데이트 실패:", err);
+        }
+
+        alert('친구 삭제가 완료되었습니다.');
+        renderFriendList(); // 바뀐 목록으로 화면 새로고침
+      });
+    });
+
   } else {
     friendListUI.innerHTML = '<p class="empty-msg">친구 목록을 불러오지 못했습니다.</p>';
   }
