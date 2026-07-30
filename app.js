@@ -31,6 +31,8 @@ let myMonsterballs = 0;
 let myTodos = [];
 let myPokedex = [];
 let myPartner = { name: '피카츄', img: pikachuImgUrl };
+let myFriends = []; // 🌟 4단계: 내 친구 목록 수첩 추가!
+let myInbox = [];   // 🌟 4단계: 선물이 도착할 우편함 추가!
 
 // 🌟 [새로워진 저장 요정] 이제 내 폰이 아니라 구글 서버(users 폴더)에 바로 저장합니다!
 async function saveData() {
@@ -44,7 +46,9 @@ async function saveData() {
     monsterballs: myMonsterballs,
     todos: myTodos,
     pokedex: myPokedex,
-    partner: myPartner
+    partner: myPartner,
+    friends: myFriends, // 🌟 저장 목록에 친구 수첩 추가
+    inbox: myInbox      // 🌟 저장 목록에 우편함 추가
   });
   console.log("☁️ 구글 클라우드 금고에 저장 완료!");
 }
