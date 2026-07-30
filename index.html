@@ -203,6 +203,19 @@
     </div>
   
   </div>
+  <!-- 🌟 우편함(알림) 팝업창 -->
+    <div id="inboxModal" class="modal-overlay hidden">
+      <div class="modal-content" style="max-width: 350px; width: 90%;">
+        <h2 style="margin-bottom: 15px;">💌 내 우편함</h2>
+        
+        <!-- 편지들이 주르륵 뜰 공간 -->
+        <ul id="inboxList" style="list-style: none; padding: 0; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+          <!-- 자바스크립트가 여기에 편지를 그려줍니다 -->
+        </ul>
+        
+        <button id="inboxCloseBtn" class="modal-btn btn-gray" style="width: 100%;">닫기</button>
+      </div>
+    </div>
 
   <script type="module" src="app.js"></script>
 </body>
