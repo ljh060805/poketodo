@@ -1119,3 +1119,103 @@ function updateInboxUI() {
     });
   }
 }
+
+// ==========================================
+// 🌟 12. 친구 미니홈피 (방문하기) 기능
+// ==========================================
+const visitModal = document.getElementById('visitModal');
+const visitCloseBtn = document.getElementById('visitCloseBtn');
+const visitTodoTabBtn = document.getElementById('visitTodoTabBtn');
+const visitDexTabBtn = document.getElementById('visitDexTabBtn');
+const visitContentArea = document.getElementById('visitContentArea');
+
+let currentVisitData = null; // 현재 놀러 간 친구의 데이터를 잠깐 기억해두는 수첩
+
+// 방에서 나가기 버튼
+if (visitCloseBtn && visitModal) {
+  visitCloseBtn.addEventListener('click', () => { 
+    visitModal.classList.add('hidden'); 
+    currentVisitData = null; // 나갈 때는 데이터 비우기
+  });
+}
+
+// 🚀 친구 방 문을 여는 핵심 마법! (다른 곳에서도 부를 수 있게 window. 에 등록)
+window.openVisitModal = async function(friendUid) {
+  try {
+    // 1. 친구의 데이터베이스 금고 열어보기
+    const friendDoc = await getDoc(doc(db, "users", friendUid));
+    if (!friendDoc.exists()) {
+      alert("친구의 정보를 불러올 수 없습니다.");
+      return;
+    }
+    
+    currentVisitData = friendDoc.data();
+    
+    const partnerName = currentVisitData.partner ? currentVisitData.partner.name : '알 수 없는';
+    const partnerImg = currentVisitData.partner ? currentVisitData.partner.img : 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+    const balls = currentVisitData.monsterballs || 0;
+    const dexCount = currentVisitData.pokedex ? currentVisitData.pokedex.length : 0;
+
+    // 2. 팝업창 상단 프로필 채워넣기
+    document.getElementById('visitName').innerText = `${partnerName} 트레이너`;
+    document.getElementById('visitPartnerImg').src = partnerImg;
+    document.getElementById('visitBallCount').innerText = balls;
+    document.getElementById('visitDexCount').innerText = dexCount;
+
+    // 3. 모달창을 짠! 하고 열고, 기본으로 [할 일 목록] 탭 보여주기
+    visitModal.classList.remove('hidden');
+    showVisitTodo();
+
+  } catch (error) {
+    console.error("방문 실패:", error);
+    alert("오류가 발생했습니다.");
+  }
+};
+
+// 📝 [할 일] 탭 내용 그리기
+function showVisitTodo() {
+  visitTodoTabBtn.style.background = '#a3cbed'; // 탭 색상 켜기
+  visitDexTabBtn.style.background = '#ddd';     // 다른 탭 끄기
+  
+  const todos = currentVisitData.todos || [];
+  if (todos.length === 0) {
+    visitContentArea.innerHTML = '<p class="empty-msg" style="text-align:center; color:#999; margin-top:40px;">오늘 등록된 퀘스트가 없습니다.</p>';
+    return;
+  }
+
+  // 친구의 할 일 목록을 예쁜 상자 형태로 만들기
+  const todoHtml = todos.map(t => `
+    <div style="background: white; padding: 12px; margin-bottom: 8px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 14px; ${t.completed ? 'text-decoration: line-through; color: #999;' : 'color: #333; font-weight: bold;'}">${t.text}</span>
+      <span style="font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px; color: white; background: ${t.completed ? '#ccc' : '#4CAF50'};">${t.completed ? '달성 완료' : '진행 중'}</span>
+    </div>
+  `).join('');
+  
+  visitContentArea.innerHTML = `<h3 style="font-size:15px; margin-bottom:15px; color:#333; text-align:center;">오늘의 퀘스트</h3>` + todoHtml;
+}
+
+// 📖 [도감] 탭 내용 그리기
+function showVisitDex() {
+  visitDexTabBtn.style.background = '#f6d365'; 
+  visitTodoTabBtn.style.background = '#ddd';   
+  
+  const pokedex = currentVisitData.pokedex || [];
+  if (pokedex.length === 0) {
+    visitContentArea.innerHTML = '<p class="empty-msg" style="text-align:center; color:#999; margin-top:40px;">도감이 비어있습니다.</p>';
+    return;
+  }
+
+  // 친구의 포켓몬들을 쪼르륵 바둑판처럼 나열하기
+  const dexHtml = pokedex.map(p => `
+    <div style="display: inline-block; margin: 5px; text-align: center; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); width: 65px;">
+      <img src="${p.img}" style="width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.1));">
+      <div style="font-size: 11px; font-weight: bold; color: #555;">${p.name}</div>
+    </div>
+  `).join('');
+  
+  visitContentArea.innerHTML = `<h3 style="font-size:15px; margin-bottom:15px; color:#333; text-align:center;">수집한 포켓몬</h3><div style="text-align:center;">` + dexHtml + `</div>`;
+}
+
+// 탭 버튼에 클릭 이벤트 연결
+if (visitTodoTabBtn) visitTodoTabBtn.addEventListener('click', showVisitTodo);
+if (visitDexTabBtn) visitDexTabBtn.addEventListener('click', showVisitDex);
