@@ -772,7 +772,7 @@ onAuthStateChanged(auth, async (user) => {
     currentUserUid = user.uid;
     loginBtn.innerText = '로그아웃';
     loginBtn.style.backgroundColor = '#ddd'; 
-    userNameDisplay.innerText = `👋 ${user.displayName} 트레이너님!`;
+    userNameDisplay.innerText = `${user.displayName} 트레이너님!`;
     
     const userDoc = doc(db, "users", currentUserUid);
     const docSnap = await getDoc(userDoc);
@@ -806,7 +806,7 @@ onAuthStateChanged(auth, async (user) => {
 
   } else {
     currentUserUid = null;
-    loginBtn.innerText = '🌐 구글로 로그인';
+    loginBtn.innerText = '구글로 로그인';
     loginBtn.style.backgroundColor = '#fbbc05'; 
     userNameDisplay.innerText = '로그인을 해주세요!';
     updateInboxUI();
