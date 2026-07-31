@@ -127,6 +127,7 @@ body {
   gap: 15px;
   margin-bottom: 20px;
 }
+
 .date-nav-btn {
   border: none;
   background: none;
@@ -231,6 +232,12 @@ ul {
 .todo-battle-btn, .todo-delete-btn, .todo-edit-btn {
   padding: 4px 8px;
   font-size: 12px;
+  border-radius: 4px;
+}
+
+.open-gift-btn, .reject-btn {
+  padding: 4px 8px;
+  font-size: 20px;
   border-radius: 4px;
 }
 
