@@ -215,6 +215,36 @@
         
         <button id="inboxCloseBtn" class="modal-btn btn-gray" style="width: 100%;">닫기</button>
       </div>
+
+      <!-- 🌟 5. 친구 방문 (미니홈피) 팝업창 -->
+    <div id="visitModal" class="modal-overlay hidden">
+      <div class="modal-content" style="max-width: 400px; width: 90%; background: #fdfbf7;">
+        <h2 style="margin-bottom: 15px; color: #333;">🏕️ 트레이너의 캠프</h2>
+        
+        <!-- [상단] 프로필 요약 구역 -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; padding: 15px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+          <img id="visitPartnerImg" src="" alt="파트너" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));">
+          <div style="text-align: left;">
+            <h3 id="visitName" style="margin: 0 0 5px 0; font-size: 18px;">이름</h3>
+            <p style="margin: 0; color: #555; font-size: 14px;">도감 수집: <strong id="visitDexCount" style="color: #4CAF50;">0</strong>마리</p>
+            <p style="margin: 0; color: #555; font-size: 14px;">보유 몬스터볼: <strong id="visitBallCount" style="color: #ff4b4b;">0</strong>개</p>
+          </div>
+        </div>
+
+        <!-- [중간] 미니 탭 메뉴 -->
+        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;">
+          <button id="visitTodoTabBtn" class="modal-btn" style="background: #a3cbed; color: #333; flex: 1; padding: 8px;">📝 할 일 목록</button>
+          <button id="visitDexTabBtn" class="modal-btn" style="background: #ddd; color: #333; flex: 1; padding: 8px;">📖 포켓몬 도감</button>
+        </div>
+
+        <!-- [하단] 내용이 표시될 공간 (스크롤 가능하게 설정) -->
+        <div id="visitContentArea" style="min-height: 200px; max-height: 250px; overflow-y: auto; background: rgba(255,255,255,0.5); border-radius: 10px; padding: 15px; margin-bottom: 20px; border: 1px solid #eee;">
+          <!-- 자바스크립트가 여기에 친구의 할 일이나 도감을 채워줍니다 -->
+        </div>
+        
+        <button id="visitCloseBtn" class="modal-btn btn-gray" style="width: 100%;">방에서 나가기</button>
+      </div>
+    </div>
     </div>
 
   <script type="module" src="app.js"></script>
