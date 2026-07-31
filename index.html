@@ -213,9 +213,9 @@
           </div>
         </div>
 
-        <!-- 🌟 [새로 추가] 선물하기 버튼 -->
-        <button id="sendGiftBtn" style="width: 100%; margin-bottom: 15px; background: linear-gradient(135deg, #ff9597 0%, #c8727d 100%); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255,149,151,0.4);">
-          몬스터볼 선물하기
+        <!-- 🌟 [수정됨] 포켓몬 선물하기 버튼 -->
+        <button id="sendGiftBtn" style="width: 100%; margin-bottom: 15px; background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%); color: #333; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(120,255,214,0.4);">
+          포켓몬 선물하기
         </button>
 
         <!-- [중간] 미니 탭 메뉴 -->
@@ -230,6 +230,17 @@
         </div>
         
         <button id="visitCloseBtn" class="modal-btn btn-gray" style="width: 100%;">방에서 나가기</button>
+      </div>
+    </div>
+
+    <!-- 🌟 포켓몬 선택 팝업창 (선물용) -->
+    <div id="pokemonGiftModal" class="modal-overlay hidden" style="z-index: 1000;">
+      <div class="modal-content" style="max-width: 350px; width: 90%;">
+        <h2 style="margin-bottom: 15px;">어떤 포켓몬을 보낼까요?</h2>
+        <!-- 내 도감이 나열될 공간 -->
+        <div id="giftPokedexList" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+        </div>
+        <button id="giftCloseBtn" class="modal-btn btn-gray" style="width: 100%;">취소</button>
       </div>
     </div>
 
