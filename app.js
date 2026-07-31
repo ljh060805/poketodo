@@ -942,8 +942,8 @@ async function renderFriendList() {
               </div>
             </div>
             <div style="display: flex; gap: 5px;">
-              <button class="visit-btn" data-uid="${friendUid}" style="background-color: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);">방문</button>
-              <button class="delete-friend-btn" data-uid="${friendUid}" style="background-color: #ff4b4b; color: white; border: none; padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 75, 75, 0.3);">삭제</button>
+              <button class="visit-btn" data-uid="${friendUid}">방문</button>
+              <button class="delete-friend-btn" data-uid="${friendUid}">삭제</button>
             </div>
           </li>
         `);
