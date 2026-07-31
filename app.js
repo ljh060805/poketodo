@@ -1119,11 +1119,11 @@ function updateInboxUI() {
       li.style.borderColor = "#ffeeba";
       li.innerHTML = `
         <p style="margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4;">
-          <strong>${msg.fromName}</strong> 트레이너가 의문의 포켓몬 선물을 보냈습니다! 🎁
+          <strong>${msg.fromName}</strong> 트레이너가 의문의 포켓몬 선물을 보냈습니다!
         </p>
         <div style="display: flex; gap: 8px; justify-content: flex-end;">
-          <button class="open-gift-btn" data-id="${msg.id}" style="background: #ff9800; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">열어보기</button>
-          <button class="reject-btn" data-id="${msg.id}" style="background: #ff4b4b; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">버리기</button>
+          <button class="open-gift-btn" data-id="${msg.id}">열어보기</button>
+          <button class="reject-btn" data-id="${msg.id}" >버리기</button>
         </div>
       `;
     }
