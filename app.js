@@ -1009,160 +1009,204 @@ async function renderFriendList() {
 }
 
 // ==========================================
-// 🌟 11. 우편함 (수락/거절) 기능
+// 🌟 11. 우편함 (알림 & 선물 열기) 기능 (최종 완벽 정리 버전)
 // ==========================================
 
-// 우편함 화면 열고 닫기 버튼 설정
+// --- [A] DOM 요소 가져오기 ---
 const inboxBtn = document.getElementById('inboxBtn');
 const inboxModal = document.getElementById('inboxModal');
 const inboxCloseBtn = document.getElementById('inboxCloseBtn');
 
+// [신규] 선물 공개 팝업 관련 요소
+const giftRevealModal = document.getElementById('giftRevealModal');
+const revealPokemonImg = document.getElementById('revealPokemonImg');
+const revealPokemonName = document.getElementById('revealPokemonName');
+const revealCloseBtn = document.getElementById('revealCloseBtn');
+
+
+// --- [B] 기본 화면 열고 닫기 이벤트 ---
+
+// 1. 우편함 모달 열기
 if (inboxBtn && inboxModal) {
-  inboxBtn.addEventListener('click', () => { inboxModal.classList.remove('hidden'); });
+  inboxBtn.addEventListener('click', () => { 
+    updateInboxUI(); // 열 때 최신 상태로 그리기
+    inboxModal.classList.remove('hidden'); 
+  });
 }
+
+// 2. 우편함 모달 닫기
 if (inboxCloseBtn && inboxModal) {
   inboxCloseBtn.addEventListener('click', () => { inboxModal.classList.add('hidden'); });
 }
 
-// 💌 편지 목록과 빨간 뱃지를 실시간으로 그려주는 마법!
+// 3. 선물 공개 팝업 닫기 (확인 버튼)
+if (revealCloseBtn && giftRevealModal) {
+  revealCloseBtn.addEventListener('click', () => { giftRevealModal.classList.add('hidden'); });
+}
+
+
+// --- [C] 핵심 기능: 우편함 화면 그리기 및 이벤트 연결 ---
+
+// 💌 편지 목록과 빨간 뱃지를 실시간으로 그려주는 마법 함수
 function updateInboxUI() {
   const badge = document.getElementById('inboxBadge');
   const inboxList = document.getElementById('inboxList');
   
-  // 1. 빨간색 뱃지 업데이트 (편지가 있으면 띄우고 없으면 숨김)
-  if (myInbox.length > 0) {
+  if (!badge || !inboxList) return; // 요소가 없으면 중단
+
+  // -----------------------------------------
+  // 1단계: 빨간색 알림 뱃지(숫자) 업데이트
+  // -----------------------------------------
+  if (myInbox && myInbox.length > 0) {
     badge.style.display = 'inline-block';
     badge.innerText = myInbox.length;
   } else {
-    badge.style.display = 'none';
+    badge.style.display = 'none'; // 편지가 없으면 즉시 숨김
   }
 
-  // 2. 우편함 팝업창 안의 편지 목록 그리기
-  if (inboxList) {
-    inboxList.innerHTML = '';
+  // -----------------------------------------
+  // 2단계: 편지 목록 그리기 (HTML 생성)
+  // -----------------------------------------
+  inboxList.innerHTML = ''; // 기존 목록 비우기
+  
+  if (!myInbox || myInbox.length === 0) {
+    inboxList.innerHTML = '<p class="empty-msg">새로 도착한 편지가 없습니다.</p>';
+    // 편지가 없으면 아래 버튼 연결 로직을 실행할 필요가 없으므로 함수 종료
+    return; 
+  }
+
+  // 데이터를 돌면서 HTML 코드 생성
+  myInbox.forEach((msg) => {
+    const li = document.createElement('li');
+    li.style.cssText = "background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; border: 1px solid #eee; list-style:none;";
     
-    if (myInbox.length === 0) {
-      inboxList.innerHTML = '<p class="empty-msg">새로 도착한 편지가 없습니다.</p>';
-      return;
+    if (msg.type === 'friend_request') {
+      // [타입 1] 동료 요청 편지
+      li.innerHTML = `
+        <p style="margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4;">
+          <strong>${msg.fromName}</strong> 트레이너가 동료 요청을 보냈습니다!
+        </p>
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button class="accept-btn" data-id="${msg.id}" data-uid="${msg.fromUid}" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">수락</button>
+          <button class="reject-btn" data-id="${msg.id}" style="background: #ff4b4b; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">거절</button>
+        </div>
+      `;
+    } else if (msg.type === 'pokemon_gift') {
+      // [타입 2] 🎁 깜짝 포켓몬 선물 편지
+      li.style.background = "#fff3cd"; // 선물은 특별한 노란색 배경
+      li.style.borderColor = "#ffeeba";
+      li.innerHTML = `
+        <p style="margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4;">
+          <strong>${msg.fromName}</strong> 트레이너가 의문의 포켓몬 선물을 보냈습니다! 🎁
+        </p>
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button class="open-gift-btn" data-id="${msg.id}" style="background: #ff9800; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">열어보기</button>
+          <button class="reject-btn" data-id="${msg.id}" style="background: #ff4b4b; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">버리기</button>
+        </div>
+      `;
     }
+    inboxList.appendChild(li);
+  });
 
-// 💌 편지 목록 그리기 (친구 요청 & 포켓몬 선물 모두 처리)
-    myInbox.forEach((msg) => {
-      const li = document.createElement('li');
-      li.style.cssText = "background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; border: 1px solid #eee;";
+
+  // -----------------------------------------
+  // 3단계: 방금 만든 버튼들에 기능(이벤트) 연결
+  // -----------------------------------------
+  // ※ 중요: 이 로직들은 반드시 updateInboxUI 함수 내부에, 
+  //   HTML이 다 그려진 직후(forEach 아래)에 위치해야 합니다.
+
+  // --- [3-1] 친구 수락 버튼 기능 ---
+  const acceptBtns = inboxList.querySelectorAll('.accept-btn');
+  acceptBtns.forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const msgId = Number(e.target.getAttribute('data-id'));
+      const senderUid = e.target.getAttribute('data-uid');
       
-      if (msg.type === 'friend_request') {
-        // [1] 동료 요청 편지 화면
-        li.innerHTML = `
-          <p style="margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4;">
-            <strong>${msg.fromName}</strong> 트레이너가 동료 요청을 보냈습니다!
-          </p>
-          <div style="display: flex; gap: 8px; justify-content: flex-end;">
-            <button class="accept-btn" data-id="${msg.id}" data-uid="${msg.fromUid}" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">수락</button>
-            <button class="reject-btn" data-id="${msg.id}" style="background: #ff4b4b; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">거절</button>
-          </div>
-        `;
-      } else if (msg.type === 'pokemon_gift') {
-        // [2] 🎁 깜짝 포켓몬 선물 화면 (정체는 숨김!)
-        li.style.background = "#fff3cd"; // 선물은 특별한 노란색 배경!
-        li.style.borderColor = "#ffeeba";
-        li.innerHTML = `
-          <p style="margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4;">
-            <strong>${msg.fromName}</strong> 트레이너가 의문의 포켓몬 선물을 보냈습니다! 🎁
-          </p>
-          <div style="display: flex; gap: 8px; justify-content: flex-end;">
-            <button class="open-gift-btn" data-id="${msg.id}" style="background: #ff9800; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">열어보기</button>
-            <button class="reject-btn" data-id="${msg.id}" style="background: #ff4b4b; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">버리기</button>
-          </div>
-        `;
+      // 1. 내 수첩에 추가
+      if (!myFriends.includes(senderUid)) { myFriends.push(senderUid); }
+
+      try {
+        // 2. 상대방 수첩에 나 몰래 추가 (서버 통신)
+        const senderRef = doc(db, "users", senderUid);
+        const senderSnap = await getDoc(senderRef);
+        if (senderSnap.exists()) {
+          const senderData = senderSnap.data();
+          let senderFriends = senderData.friends || [];
+          if (!senderFriends.includes(currentUserUid)) {
+            senderFriends.push(currentUserUid);
+            // setDoc 요정이 파이어베이스 서버 업데이트
+            await setDoc(senderRef, { friends: senderFriends }, { merge: true });
+          }
+        }
+      } catch (err) { console.error("상대 수첩 업데이트 실패:", err); }
+
+      // 3. 처리한 편지 지우고 로컬 저장
+      myInbox = myInbox.filter(m => m.id !== msgId);
+      saveData();
+      
+      alert("🎉 친구 요청을 수락했습니다! 서로의 목록에 추가됩니다.");
+      
+      // 4. 화면 즉시 갱신 (빨간 숫자 줄어들고, 친구 목록 새로고침)
+      updateInboxUI();
+      if (window.renderFriendList) renderFriendList(); // 광장 탭에 있다면 목록 갱신
+    });
+  });
+
+  // --- [3-2] 거절 / 버리기 버튼 기능 (공통 사용) ---
+  const rejectBtns = inboxList.querySelectorAll('.reject-btn');
+  rejectBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const msgId = Number(e.target.getAttribute('data-id'));
+      
+      // 편지 지우고 로컬 저장
+      myInbox = myInbox.filter(m => m.id !== msgId);
+      saveData();
+      
+      // 화면 즉시 갱신 (빨간 숫자 줄어듦)
+      updateInboxUI();
+    });
+  });
+
+  // --- [3-3] 🎁 선물 열어보기 버튼 기능 ---
+  const openGiftBtns = inboxList.querySelectorAll('.open-gift-btn');
+  openGiftBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const msgId = Number(e.target.getAttribute('data-id'));
+      // 전체 우편함에서 해당 편지 데이터 찾기
+      const giftMsg = myInbox.find(m => m.id === msgId);
+      
+      if (giftMsg && giftMsg.pokemon) {
+        const p = giftMsg.pokemon; // 편지 속에 숨겨둔 포켓몬 데이터 꺼내기
+        
+        // 1. 내 도감에 진짜로 추가
+        const existing = myPokedex.find(poke => poke.id === p.id);
+        if (existing) {
+          existing.count = (existing.count || 1) + 1; // 이미 있으면 숫자만 올림
+        } else {
+          myPokedex.push({ id: p.id, name: p.name, img: p.img, count: 1 }); // 없으면 새로 추가
+        }
+
+        // 2. 편지 지우고 로컬 저장
+        myInbox = myInbox.filter(m => m.id !== msgId);
+        saveData();
+        
+        // 3. 내 화면 갱신 (도감 갱신, 우편함 뱃지 갱신)
+        if (window.updatePokedexUI) updatePokedexUI(); 
+        updateInboxUI(); 
+
+        // 4. (🌟 하이라이트) 깜짝 공개 팝업창 띄우기
+        if (revealPokemonImg && revealPokemonName && giftRevealModal) {
+          revealPokemonImg.src = p.img; // 커다란 사진 넣기
+          revealPokemonName.innerText = p.name; // 이름 넣기
+          giftRevealModal.classList.remove('hidden'); // 팝업창 짠!
+        }
+        
+        // 우편함 모달은 디자인상 닫아주는 게 깔끔함
+        if (inboxModal) inboxModal.classList.add('hidden');
       }
-      inboxList.appendChild(li);
     });
-
-    // 3. [수락] 버튼 기능: 양쪽 수첩에 서로를 추가!
-    const acceptBtns = inboxList.querySelectorAll('.accept-btn');
-    acceptBtns.forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const msgId = Number(e.target.getAttribute('data-id'));
-        const senderUid = e.target.getAttribute('data-uid');
-        
-        // 내 수첩에 친구 적기
-        if (!myFriends.includes(senderUid)) {
-          myFriends.push(senderUid);
-        }
-
-        try {
-          // ☁️ 상대방 수첩에도 나를 몰래 적어주기 (서버 통신)
-          const senderRef = doc(db, "users", senderUid);
-          const senderSnap = await getDoc(senderRef);
-          if (senderSnap.exists()) {
-            const senderData = senderSnap.data();
-            let senderFriends = senderData.friends || [];
-            
-            if (!senderFriends.includes(currentUserUid)) {
-              senderFriends.push(currentUserUid);
-              // 상대방 데이터 덮어씌우기
-              await setDoc(senderRef, { friends: senderFriends }, { merge: true });
-            }
-          }
-        } catch (err) {
-          console.error("상대방 수첩 업데이트 실패:", err);
-        }
-
-        // 편지 지우고 내 데이터베이스 저장
-        myInbox = myInbox.filter(m => m.id !== msgId);
-        saveData();
-        
-        alert("🎉 친구 요청을 수락했습니다! 서로의 목록에 추가됩니다.");
-        
-        // 화면 새로고침
-        updateInboxUI();
-        renderFriendList();
-      });
-    });
-
-    // 4. [거절] 버튼 기능: 편지만 조용히 찢어버림
-    const rejectBtns = inboxList.querySelectorAll('.reject-btn');
-    rejectBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const msgId = Number(e.target.getAttribute('data-id'));
-        
-        myInbox = myInbox.filter(m => m.id !== msgId);
-        saveData();
-        updateInboxUI();
-      });
-    });
-  }
-}
-
-const openGiftBtns = inboxList.querySelectorAll('.open-gift-btn');
-    openGiftBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const msgId = Number(e.target.getAttribute('data-id'));
-        const giftMsg = myInbox.find(m => m.id === msgId); // 편지 안에서 데이터 꺼내기
-        
-        if (giftMsg && giftMsg.pokemon) {
-          const p = giftMsg.pokemon;
-          
-          // 내 도감에 추가 (이미 있으면 카운트+1, 없으면 새로 추가)
-          const existing = myPokedex.find(poke => poke.id === p.id);
-          if (existing) {
-            existing.count = (existing.count || 1) + 1;
-          } else {
-            myPokedex.push({ id: p.id, name: p.name, img: p.img, count: 1 });
-          }
-
-          // 편지 지우고 저장
-          myInbox = myInbox.filter(m => m.id !== msgId);
-          saveData();
-          updatePokedexUI(); // 내 화면의 도감 갱신
-          updateInboxUI();   // 우편함 갱신
-
-          // 🎉 깜짝 알림창으로 포켓몬 정체 공개!
-          alert(`🎉 짠! 상자 안에는 [${p.name}]이(가) 들어있었습니다!\n포켓몬 도감에 추가됩니다.`);
-        }
-      });
-    });
+  });
+} // <--- updateInboxUI 함수는 여기서 깔끔하게 끝납니다.
 
 // ==========================================
 // 🌟 12. 친구 미니홈피 (방문하기) 기능
