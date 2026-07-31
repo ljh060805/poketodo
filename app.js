@@ -1054,6 +1054,28 @@ function updateInboxUI() {
   
   if (!badge || !inboxList) return; // 요소가 없으면 중단
 
+  if (myInbox) {
+    const originalLength = myInbox.length;
+    // 우리가 아는 '정상적인 편지'만 남기고 나머지는 다 걸러냅니다.
+    myInbox = myInbox.filter(msg => msg.type === 'friend_request' || msg.type === 'pokemon_gift');
+    
+    // 만약 걸러냈더니 편지 개수가 줄어들었다면? (유령 편지를 버렸다면)
+    if (originalLength !== myInbox.length) {
+      saveData(); // 청소된 깨끗한 상태로 다시 저장!
+    }
+  }
+  // =========================================
+
+  // -----------------------------------------
+  // 1단계: 빨간색 알림 뱃지(숫자) 업데이트
+  // -----------------------------------------
+  if (myInbox && myInbox.length > 0) {
+    badge.style.display = 'inline-block';
+    badge.innerText = myInbox.length;
+  } else {
+    badge.style.display = 'none'; // 편지가 없으면 즉시 숨김
+  }
+  
   // -----------------------------------------
   // 1단계: 빨간색 알림 뱃지(숫자) 업데이트
   // -----------------------------------------
