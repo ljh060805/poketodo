@@ -1372,9 +1372,10 @@ if (sendGiftBtn) {
   });
 }
 
-// 2. 선택한 포켓몬을 상대방 우편함에 배달하는 마법
+// 2. 선택한 포켓몬을 상대방 우편함에 배달하는 마법 (★ 내 도감에서 차감됨!)
 async function sendPokemonToFriend(pokemon) {
-  if(!confirm(`[${pokemon.name}]을(를) 선물로 보내시겠습니까?\n(선물해도 내 포켓몬은 사라지지 않습니다!)`)) return;
+  // 1. 안내 메시지 변경 (진짜로 사라진다는 경고 추가)
+  if(!confirm(`[${pokemon.name}]을(를) 선물로 보내시겠습니까?\n(⚠️ 주의: 선물하면 내 도감에서 사라집니다!)`)) return;
   
   pokemonGiftModal.classList.add('hidden');
   sendGiftBtn.innerText = '비밀 상자 포장 중... 🚀';
@@ -1387,17 +1388,37 @@ async function sendPokemonToFriend(pokemon) {
       const friendData = friendSnap.data();
       let friendInbox = friendData.inbox || [];
 
-      // 우편함에 넣을 선물 객체 (포켓몬 정보 몰래 숨겨두기)
+      // 우편함에 넣을 선물 객체 포장
       const newGift = {
         id: Date.now(),
         type: 'pokemon_gift',
         fromUid: currentUserUid,
         fromName: myPartner.name,
-        pokemon: pokemon // 어떤 포켓몬인지 데이터를 통째로 넣습니다!
+        pokemon: pokemon 
       };
 
+      // 친구 서버에 전송
       friendInbox.push(newGift);
       await setDoc(friendDocRef, { inbox: friendInbox }, { merge: true });
+
+      // =========================================
+      // 🌟 [핵심 마법] 내 도감에서 포켓몬 빼기
+      // =========================================
+      const myPokeIndex = myPokedex.findIndex(p => p.id === pokemon.id);
+      
+      if (myPokeIndex !== -1) {
+        if (myPokedex[myPokeIndex].count > 1) {
+          // 2마리 이상 가지고 있다면 숫자만 1개 줄임
+          myPokedex[myPokeIndex].count -= 1; 
+        } else {
+          // 1마리밖에 없다면 도감 목록에서 완전히 삭제!
+          myPokedex.splice(myPokeIndex, 1); 
+        }
+      }
+      
+      saveData(); // 내 데이터베이스에 저장
+      if (window.updatePokedexUI) updatePokedexUI(); // 내 도감 화면 새로고침
+      // =========================================
 
       alert('친구의 우편함으로 깜짝 포켓몬 선물을 보냈습니다! 🎉');
     }
