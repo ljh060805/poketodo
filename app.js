@@ -961,7 +961,7 @@ async function renderFriendList() {
     visitBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
         const targetUid = e.target.getAttribute('data-uid');
-        alert('친구의 미니홈피로 이동합니다!\n(이 기능은 다음 단계에서 만들 예정입니다 😆)');
+        window.openVisitModal(targetUid);
       });
     });
 
