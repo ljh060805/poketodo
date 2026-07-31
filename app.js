@@ -1222,48 +1222,79 @@ function showVisitDex() {
 if (visitTodoTabBtn) visitTodoTabBtn.addEventListener('click', showVisitTodo);
 if (visitDexTabBtn) visitDexTabBtn.addEventListener('click', showVisitDex);
 
-// 🎁 몬스터볼 선물 보내기 기능
+// ==========================================
+// 🎁 포켓몬 선물 보내기 기능
+// ==========================================
+const pokemonGiftModal = document.getElementById('pokemonGiftModal');
+const giftPokedexList = document.getElementById('giftPokedexList');
+const giftCloseBtn = document.getElementById('giftCloseBtn');
 const sendGiftBtn = document.getElementById('sendGiftBtn');
+
+// 선물 모달 닫기
+if(giftCloseBtn && pokemonGiftModal) {
+  giftCloseBtn.addEventListener('click', () => pokemonGiftModal.classList.add('hidden'));
+}
+
+// 1. [포켓몬 선물하기] 버튼을 누르면 내 도감 열기
 if (sendGiftBtn) {
-  sendGiftBtn.addEventListener('click', async () => {
+  sendGiftBtn.addEventListener('click', () => {
     if (!currentVisitUid) return;
-
-    sendGiftBtn.innerText = '배달 중... 🚀';
-
-    try {
-      const friendDocRef = doc(db, "users", currentVisitUid);
-      const friendSnap = await getDoc(friendDocRef);
-
-      if (friendSnap.exists()) {
-        const friendData = friendSnap.data();
-        let friendInbox = friendData.inbox || [];
-
-        // 오늘 이미 선물을 보냈는지 확인 (도배 방지)
-        const alreadySent = friendInbox.find(msg => msg.type === 'gift' && msg.fromUid === currentUserUid);
-        if (alreadySent) {
-          alert('오늘은 이미 선물을 보냈습니다! 내일 다시 와주세요.');
-          sendGiftBtn.innerText = '몬스터볼 선물하기';
-          return;
-        }
-
-        // 친구 우편함에 선물 포장해서 넣기
-        const newGift = {
-          id: Date.now(),
-          type: 'gift', // 편지 종류: 선물
-          fromUid: currentUserUid,
-          fromName: myPartner.name
-        };
-
-        friendInbox.push(newGift);
-        await setDoc(friendDocRef, { inbox: friendInbox }, { merge: true });
-
-        alert('친구의 우편함으로 몬스터볼을 배달했습니다! 🎉');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('선물 배달에 실패했습니다.');
-    } finally {
-      sendGiftBtn.innerText = '몬스터볼 선물하기';
+    
+    if (myPokedex.length === 0) {
+      alert("앗! 아직 도감에 선물할 수 있는 포켓몬이 없습니다.");
+      return;
     }
+    
+    // 도감 비우고 다시 그리기
+    giftPokedexList.innerHTML = '';
+    
+    myPokedex.forEach(p => {
+      const div = document.createElement('div');
+      div.style.cssText = "text-align: center; background: #f9f9f9; padding: 10px; border-radius: 10px; cursor: pointer; width: 65px; border: 1px solid #ddd;";
+      div.innerHTML = `<img src="${p.img}" style="width: 40px; height: 40px; object-fit: contain;"><div style="font-size:11px; margin-top:5px; font-weight:bold;">${p.name}</div>`;
+      
+      // 포켓몬을 클릭하면 진짜로 보낼 건지 묻고 전송!
+      div.addEventListener('click', () => sendPokemonToFriend(p));
+      giftPokedexList.appendChild(div);
+    });
+    
+    pokemonGiftModal.classList.remove('hidden');
   });
+}
+
+// 2. 선택한 포켓몬을 상대방 우편함에 배달하는 마법
+async function sendPokemonToFriend(pokemon) {
+  if(!confirm(`[${pokemon.name}]을(를) 선물로 보내시겠습니까?\n(선물해도 내 포켓몬은 사라지지 않습니다!)`)) return;
+  
+  pokemonGiftModal.classList.add('hidden');
+  sendGiftBtn.innerText = '비밀 상자 포장 중... 🚀';
+
+  try {
+    const friendDocRef = doc(db, "users", currentVisitUid);
+    const friendSnap = await getDoc(friendDocRef);
+
+    if (friendSnap.exists()) {
+      const friendData = friendSnap.data();
+      let friendInbox = friendData.inbox || [];
+
+      // 우편함에 넣을 선물 객체 (포켓몬 정보 몰래 숨겨두기)
+      const newGift = {
+        id: Date.now(),
+        type: 'pokemon_gift',
+        fromUid: currentUserUid,
+        fromName: myPartner.name,
+        pokemon: pokemon // 어떤 포켓몬인지 데이터를 통째로 넣습니다!
+      };
+
+      friendInbox.push(newGift);
+      await setDoc(friendDocRef, { inbox: friendInbox }, { merge: true });
+
+      alert('친구의 우편함으로 깜짝 포켓몬 선물을 보냈습니다! 🎉');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('선물 배달에 실패했습니다.');
+  } finally {
+    sendGiftBtn.innerText = '🎁 포켓몬 선물하기';
+  }
 }
