@@ -1079,43 +1079,6 @@ function updateInboxUI() {
       inboxList.appendChild(li);
     });
 
-    // =====================================
-    // 🌟 3. 버튼들 마법 연결하기
-    // =====================================
-
-    // [기존] 친구 요청 수락 버튼 기능 ... (이 부분은 건드리지 않아도 원래 있던 곳 아래에 둡니다)
-    // [기존] 거절 버튼 기능 ... (모든 거절 버튼 공통 처리)
-
-    // 🎁 [선물 열어보기] 버튼 기능 추가!
-    const openGiftBtns = inboxList.querySelectorAll('.open-gift-btn');
-    openGiftBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const msgId = Number(e.target.getAttribute('data-id'));
-        const giftMsg = myInbox.find(m => m.id === msgId); // 편지 안에서 데이터 꺼내기
-        
-        if (giftMsg && giftMsg.pokemon) {
-          const p = giftMsg.pokemon;
-          
-          // 내 도감에 추가 (이미 있으면 카운트+1, 없으면 새로 추가)
-          const existing = myPokedex.find(poke => poke.id === p.id);
-          if (existing) {
-            existing.count = (existing.count || 1) + 1;
-          } else {
-            myPokedex.push({ id: p.id, name: p.name, img: p.img, count: 1 });
-          }
-
-          // 편지 지우고 저장
-          myInbox = myInbox.filter(m => m.id !== msgId);
-          saveData();
-          updatePokedexUI(); // 내 화면의 도감 갱신
-          updateInboxUI();   // 우편함 갱신
-
-          // 🎉 깜짝 알림창으로 포켓몬 정체 공개!
-          alert(`🎉 짠! 상자 안에는 [${p.name}]이(가) 들어있었습니다!\n포켓몬 도감에 추가됩니다.`);
-        }
-      });
-    });
-
     // 3. [수락] 버튼 기능: 양쪽 수첩에 서로를 추가!
     const acceptBtns = inboxList.querySelectorAll('.accept-btn');
     acceptBtns.forEach(btn => {
@@ -1171,6 +1134,35 @@ function updateInboxUI() {
     });
   }
 }
+
+const openGiftBtns = inboxList.querySelectorAll('.open-gift-btn');
+    openGiftBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const msgId = Number(e.target.getAttribute('data-id'));
+        const giftMsg = myInbox.find(m => m.id === msgId); // 편지 안에서 데이터 꺼내기
+        
+        if (giftMsg && giftMsg.pokemon) {
+          const p = giftMsg.pokemon;
+          
+          // 내 도감에 추가 (이미 있으면 카운트+1, 없으면 새로 추가)
+          const existing = myPokedex.find(poke => poke.id === p.id);
+          if (existing) {
+            existing.count = (existing.count || 1) + 1;
+          } else {
+            myPokedex.push({ id: p.id, name: p.name, img: p.img, count: 1 });
+          }
+
+          // 편지 지우고 저장
+          myInbox = myInbox.filter(m => m.id !== msgId);
+          saveData();
+          updatePokedexUI(); // 내 화면의 도감 갱신
+          updateInboxUI();   // 우편함 갱신
+
+          // 🎉 깜짝 알림창으로 포켓몬 정체 공개!
+          alert(`🎉 짠! 상자 안에는 [${p.name}]이(가) 들어있었습니다!\n포켓몬 도감에 추가됩니다.`);
+        }
+      });
+    });
 
 // ==========================================
 // 🌟 12. 친구 미니홈피 (방문하기) 기능
