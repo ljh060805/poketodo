@@ -1130,6 +1130,7 @@ const visitDexTabBtn = document.getElementById('visitDexTabBtn');
 const visitContentArea = document.getElementById('visitContentArea');
 
 let currentVisitData = null; // 현재 놀러 간 친구의 데이터를 잠깐 기억해두는 수첩
+let currentVisitUid = null;
 
 // 방에서 나가기 버튼
 if (visitCloseBtn && visitModal) {
@@ -1143,6 +1144,7 @@ if (visitCloseBtn && visitModal) {
 window.openVisitModal = async function(friendUid) {
   try {
     // 1. 친구의 데이터베이스 금고 열어보기
+    currentVisitUid = friendUid;
     const friendDoc = await getDoc(doc(db, "users", friendUid));
     if (!friendDoc.exists()) {
       alert("친구의 정보를 불러올 수 없습니다.");
@@ -1219,3 +1221,49 @@ function showVisitDex() {
 // 탭 버튼에 클릭 이벤트 연결
 if (visitTodoTabBtn) visitTodoTabBtn.addEventListener('click', showVisitTodo);
 if (visitDexTabBtn) visitDexTabBtn.addEventListener('click', showVisitDex);
+
+// 🎁 몬스터볼 선물 보내기 기능
+const sendGiftBtn = document.getElementById('sendGiftBtn');
+if (sendGiftBtn) {
+  sendGiftBtn.addEventListener('click', async () => {
+    if (!currentVisitUid) return;
+
+    sendGiftBtn.innerText = '배달 중... 🚀';
+
+    try {
+      const friendDocRef = doc(db, "users", currentVisitUid);
+      const friendSnap = await getDoc(friendDocRef);
+
+      if (friendSnap.exists()) {
+        const friendData = friendSnap.data();
+        let friendInbox = friendData.inbox || [];
+
+        // 오늘 이미 선물을 보냈는지 확인 (도배 방지)
+        const alreadySent = friendInbox.find(msg => msg.type === 'gift' && msg.fromUid === currentUserUid);
+        if (alreadySent) {
+          alert('오늘은 이미 선물을 보냈습니다! 내일 다시 와주세요.');
+          sendGiftBtn.innerText = '몬스터볼 선물하기';
+          return;
+        }
+
+        // 친구 우편함에 선물 포장해서 넣기
+        const newGift = {
+          id: Date.now(),
+          type: 'gift', // 편지 종류: 선물
+          fromUid: currentUserUid,
+          fromName: myPartner.name
+        };
+
+        friendInbox.push(newGift);
+        await setDoc(friendDocRef, { inbox: friendInbox }, { merge: true });
+
+        alert('친구의 우편함으로 몬스터볼을 배달했습니다! 🎉');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('선물 배달에 실패했습니다.');
+    } finally {
+      sendGiftBtn.innerText = '몬스터볼 선물하기';
+    }
+  });
+}
