@@ -1046,11 +1046,13 @@ function updateInboxUI() {
       return;
     }
 
-    // 편지가 있다면 하나씩 화면에 카드로 만듦
+// 💌 편지 목록 그리기 (친구 요청 & 포켓몬 선물 모두 처리)
     myInbox.forEach((msg) => {
+      const li = document.createElement('li');
+      li.style.cssText = "background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; border: 1px solid #eee;";
+      
       if (msg.type === 'friend_request') {
-        const li = document.createElement('li');
-        li.style.cssText = "background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; border: 1px solid #eee;";
+        // [1] 동료 요청 편지 화면
         li.innerHTML = `
           <p style="margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4;">
             <strong>${msg.fromName}</strong> 트레이너가 동료 요청을 보냈습니다!
@@ -1060,8 +1062,58 @@ function updateInboxUI() {
             <button class="reject-btn" data-id="${msg.id}" style="background: #ff4b4b; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">거절</button>
           </div>
         `;
-        inboxList.appendChild(li);
+      } else if (msg.type === 'pokemon_gift') {
+        // [2] 🎁 깜짝 포켓몬 선물 화면 (정체는 숨김!)
+        li.style.background = "#fff3cd"; // 선물은 특별한 노란색 배경!
+        li.style.borderColor = "#ffeeba";
+        li.innerHTML = `
+          <p style="margin: 0 0 10px 0; font-size: 14px; color: #333; line-height: 1.4;">
+            <strong>${msg.fromName}</strong> 트레이너가 의문의 포켓몬 선물을 보냈습니다! 🎁
+          </p>
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button class="open-gift-btn" data-id="${msg.id}" style="background: #ff9800; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">열어보기</button>
+            <button class="reject-btn" data-id="${msg.id}" style="background: #ff4b4b; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-weight: bold; cursor: pointer;">버리기</button>
+          </div>
+        `;
       }
+      inboxList.appendChild(li);
+    });
+
+    // =====================================
+    // 🌟 3. 버튼들 마법 연결하기
+    // =====================================
+
+    // [기존] 친구 요청 수락 버튼 기능 ... (이 부분은 건드리지 않아도 원래 있던 곳 아래에 둡니다)
+    // [기존] 거절 버튼 기능 ... (모든 거절 버튼 공통 처리)
+
+    // 🎁 [선물 열어보기] 버튼 기능 추가!
+    const openGiftBtns = inboxList.querySelectorAll('.open-gift-btn');
+    openGiftBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const msgId = Number(e.target.getAttribute('data-id'));
+        const giftMsg = myInbox.find(m => m.id === msgId); // 편지 안에서 데이터 꺼내기
+        
+        if (giftMsg && giftMsg.pokemon) {
+          const p = giftMsg.pokemon;
+          
+          // 내 도감에 추가 (이미 있으면 카운트+1, 없으면 새로 추가)
+          const existing = myPokedex.find(poke => poke.id === p.id);
+          if (existing) {
+            existing.count = (existing.count || 1) + 1;
+          } else {
+            myPokedex.push({ id: p.id, name: p.name, img: p.img, count: 1 });
+          }
+
+          // 편지 지우고 저장
+          myInbox = myInbox.filter(m => m.id !== msgId);
+          saveData();
+          updatePokedexUI(); // 내 화면의 도감 갱신
+          updateInboxUI();   // 우편함 갱신
+
+          // 🎉 깜짝 알림창으로 포켓몬 정체 공개!
+          alert(`🎉 짠! 상자 안에는 [${p.name}]이(가) 들어있었습니다!\n포켓몬 도감에 추가됩니다.`);
+        }
+      });
     });
 
     // 3. [수락] 버튼 기능: 양쪽 수첩에 서로를 추가!
