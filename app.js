@@ -166,15 +166,10 @@ function renderTodos() {
     return;
   }
 
-  // 골라낸 할 일들을 하나씩 화면에 카드(li)로 만들어주기
+// 골라낸 할 일들을 하나씩 화면에 카드(li)로 만들어주기
   todayTodos.forEach((todo) => {
     const li = document.createElement('li');
     li.innerHTML = `
-      <div class="todo-left">
-        <input type="checkbox" class="todo-check" ${todo.isCompleted ? 'checked disabled' : ''}>
-        <span class="todo-diff ${todo.difficulty}">${todo.diffText}</span>
-        <span class="todo-text" style="${todo.isCompleted ? 'text-decoration: line-through; color: #999;' : ''}">${todo.text}</span>
-      </div>
       <div class="todo-left">
         <input type="checkbox" class="todo-check" ${todo.isCompleted ? 'checked disabled' : ''}>
         <span class="todo-diff ${todo.difficulty}">${todo.diffText}</span>
@@ -188,8 +183,8 @@ function renderTodos() {
           ${todo.isCompleted ? 'disabled style="opacity: 0.5;"' : ''}>전투</button>
         <button type="button" class="todo-delete-btn">❌</button>
       </div>
-
     `;
+
 
     // 각 버튼 기능 연결
     const 체크박스 = li.querySelector('.todo-check');
