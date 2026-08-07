@@ -175,16 +175,20 @@ function renderTodos() {
         <span class="todo-diff ${todo.difficulty}">${todo.diffText}</span>
         <span class="todo-text" style="${todo.isCompleted ? 'text-decoration: line-through; color: #999;' : ''}">${todo.text}</span>
       </div>
+      <div class="todo-left">
+        <input type="checkbox" class="todo-check" ${todo.isCompleted ? 'checked disabled' : ''}>
+        <span class="todo-diff ${todo.difficulty}">${todo.diffText}</span>
+        <span class="todo-text" style="${todo.isCompleted ? 'text-decoration: line-through; color: #999;' : ''}">${todo.text}</span>
+      </div>
       <div class="todo-right">
-        <!-- 🌟 이 부분이 빠져있으면 화면에 연필이 안 보입니다! 🌟 -->
         <button type="button" class="todo-edit-btn" ${todo.isCompleted ? 'disabled style="opacity: 0.5;"' : ''}>수정</button>
-      <div class="todo-right">
         <button type="button" class="todo-battle-btn" 
           data-time="${todo.time}" data-hp="${todo.hp}" data-diff="${todo.difficulty}"
           data-pokename="${todo.pokeName}" data-pokeimg="${todo.pokeImg}"
           ${todo.isCompleted ? 'disabled style="opacity: 0.5;"' : ''}>전투</button>
         <button type="button" class="todo-delete-btn">❌</button>
       </div>
+
     `;
 
     // 각 버튼 기능 연결
