@@ -244,8 +244,26 @@
       </div>
     </div>
 
+<!-- 🌟 할 일 수정 팝업창 (여기 추가!) -->
+    <div id="editModal" class="modal-overlay hidden" style="z-index: 1000;">
+      <div class="modal-content">
+        <h3 class="edit-modal-title">할 일 수정</h3>
+        <input type="text" id="editTodoInput" class="edit-input" placeholder="수정할 내용" style="width: 80%; padding: 10px; margin-bottom: 10px;">
+        <br>
+        <select id="editDifficultySelect" class="edit-select" style="padding: 10px; margin-bottom: 20px;">
+          <option value="easy">하 (1시간 / HP 60)</option>
+          <option value="normal">중 (2시간 / HP 120)</option>
+          <option value="hard">상 (3시간 / HP 180)</option>
+        </select>
+        <div class="modal-btn-group">
+          <button id="editSaveBtn" class="modal-btn btn-green">저장</button>
+          <button id="editCancelBtn" class="modal-btn btn-gray">취소</button>
+        </div>
+      </div>
+    </div>
+    
   </div> <!-- 🌟 #app 상자 닫힘 -->
-
+  
   <script type="module" src="app.js"></script>
   <!-- 🌟 [새로 추가] 포켓몬 선물 깜짝 공개 팝업창 -->
     <div id="giftRevealModal" class="modal-overlay hidden" style="z-index: 2000; background: rgba(0,0,0,0.85);">
